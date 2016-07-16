@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp">
+
+    <EditText
+        android:id="@+id/regis_name"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="昵称"
+        android:layout_above="@+id/regis_mail"/>
+    <EditText
+        android:id="@+id/regis_mail"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_above="@+id/regis_password"
+        android:hint="邮箱"/>
+    <EditText
+        android:id="@+id/regis_password"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:hint="密码"/>
+    <TextView
+        android:id="@+id/regis_jiange"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@id/regis_password"/>
+    <Button
+        android:id="@+id/registered_real"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/regis_jiange"
+        android:layout_centerHorizontal="true"
+        android:text="注册"
+        android:textSize="35sp" />
+
+</RelativeLayout>

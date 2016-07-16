@@ -11,17 +11,16 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Frostmaki on 2016/7/14.
+ * Created by Frostmaki on 2016/7/17.
  */
-public class My_planet_listview_BaseAdapter extends BaseAdapter{
-
+public class Planet_details_listview_BaseAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<String> my_planet_arraylist;
+    private ArrayList<String> planet_details_arraylist;
 
 
-    public My_planet_listview_BaseAdapter(Context context,ArrayList<String> arrayList){
+    public Planet_details_listview_BaseAdapter(Context context,ArrayList<String> arrayList){
         mContext=context;
-        my_planet_arraylist=arrayList;
+        planet_details_arraylist=arrayList;
     }
     @Override
     public int getCount() {
@@ -45,15 +44,15 @@ public class My_planet_listview_BaseAdapter extends BaseAdapter{
             viewHolder=new ViewHolder();
             convertView= LayoutInflater.from(mContext).inflate(
                     R.layout.my_planet_listview_item,parent,false);
-            viewHolder.my_planet_listview_image=
+            viewHolder.planet_details_listview_image=
                     (ImageView) convertView.findViewById(R.id.my_planet_listView_item_image);
-            viewHolder.my_planet_listview_text=
+            viewHolder.planet_details_listview_text=
                     (TextView) convertView.findViewById(R.id.my_planet_listView_item_text);
-            viewHolder.my_planet_listview_title=
+            viewHolder.planet_details_listview_title=
                     (TextView) convertView.findViewById(R.id.my_planet_listView_item_title);
-            viewHolder.my_planet_listview_image.setImageResource(R.drawable.ic_launcher);
-            viewHolder.my_planet_listview_title.setText("我的星球的帖子de标题"+my_planet_arraylist.get(position));
-            viewHolder.my_planet_listview_text.setText("我的星球的帖子的内容"+my_planet_arraylist.get(position));
+            viewHolder.planet_details_listview_image.setImageResource(R.drawable.ic_launcher);
+            viewHolder.planet_details_listview_title.setText("星球名称的帖子de标题"+planet_details_arraylist.get(position));
+            viewHolder.planet_details_listview_text.setText("星球名称的帖子的内容"+planet_details_arraylist.get(position));
 
             convertView.setTag(viewHolder);
         }else {
@@ -63,8 +62,8 @@ public class My_planet_listview_BaseAdapter extends BaseAdapter{
     }
 
     class ViewHolder{
-        ImageView my_planet_listview_image;
-        TextView my_planet_listview_text;
-        TextView my_planet_listview_title;
+        ImageView planet_details_listview_image;
+        TextView planet_details_listview_text;
+        TextView planet_details_listview_title;
     }
 }

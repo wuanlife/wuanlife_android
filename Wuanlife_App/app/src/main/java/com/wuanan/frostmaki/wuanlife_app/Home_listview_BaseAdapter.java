@@ -11,15 +11,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Frostmaki on 2016/7/14.
+ * Created by Frostmaki on 2016/7/16.
  */
-public class My_planet_listview_BaseAdapter extends BaseAdapter{
-
+public class Home_listview_BaseAdapter extends BaseAdapter{
     private Context mContext;
     private ArrayList<String> my_planet_arraylist;
 
 
-    public My_planet_listview_BaseAdapter(Context context,ArrayList<String> arrayList){
+    public Home_listview_BaseAdapter(Context context,ArrayList<String> arrayList){
         mContext=context;
         my_planet_arraylist=arrayList;
     }
@@ -45,15 +44,15 @@ public class My_planet_listview_BaseAdapter extends BaseAdapter{
             viewHolder=new ViewHolder();
             convertView= LayoutInflater.from(mContext).inflate(
                     R.layout.my_planet_listview_item,parent,false);
-            viewHolder.my_planet_listview_image=
+            viewHolder.home_listview_image=
                     (ImageView) convertView.findViewById(R.id.my_planet_listView_item_image);
-            viewHolder.my_planet_listview_text=
+            viewHolder.home_listview_text=
                     (TextView) convertView.findViewById(R.id.my_planet_listView_item_text);
-            viewHolder.my_planet_listview_title=
+            viewHolder.home_listview_title=
                     (TextView) convertView.findViewById(R.id.my_planet_listView_item_title);
-            viewHolder.my_planet_listview_image.setImageResource(R.drawable.ic_launcher);
-            viewHolder.my_planet_listview_title.setText("我的星球的帖子de标题"+my_planet_arraylist.get(position));
-            viewHolder.my_planet_listview_text.setText("我的星球的帖子的内容"+my_planet_arraylist.get(position));
+            viewHolder.home_listview_image.setImageResource(R.drawable.ic_launcher);
+            viewHolder.home_listview_title.setText("首页的帖子de标题"+my_planet_arraylist.get(position));
+            viewHolder.home_listview_text.setText("首页的帖子的内容"+my_planet_arraylist.get(position));
 
             convertView.setTag(viewHolder);
         }else {
@@ -63,8 +62,8 @@ public class My_planet_listview_BaseAdapter extends BaseAdapter{
     }
 
     class ViewHolder{
-        ImageView my_planet_listview_image;
-        TextView my_planet_listview_text;
-        TextView my_planet_listview_title;
+        ImageView home_listview_image;
+        TextView home_listview_text;
+        TextView home_listview_title;
     }
 }

@@ -11,17 +11,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,View.OnClickListener {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ArrayList<String> menusLists;
     private ArrayAdapter<String> adapter;
     private LinearLayout mLinearLayout;
+    private Button login_btn;
+    private Button registered_btn;
 
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private Toolbar mtoolbar;
@@ -33,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mLinearLayout= (LinearLayout) findViewById(R.id.drawer_LinearLayout);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        login_btn= (Button) findViewById(R.id.login);
+        registered_btn= (Button) findViewById(R.id.registered);
+
         menusLists = new ArrayList<String>();
 
         menusLists.add("首页");
@@ -57,6 +63,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         };
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+
+        initContentView();
+
+        login_btn.setOnClickListener(this);
+        registered_btn.setOnClickListener(this);
     }
 
     @Override
@@ -66,14 +77,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         args.putString("text", menusLists.get(position));
         switch (position){
             case 0:
-                Fragment home_Fragment = new Home_Fragment();
-                home_Fragment.setArguments(args);
-
-                FragmentManager home_fm = getFragmentManager();
-                home_fm.beginTransaction().replace(R.id.content_frame, home_Fragment).commit();
+                //首页
+                initContentView();
 
                 break;
             case 1:
+                //我的星球
                 Fragment my_planet_Fragment = new My_Planet_Fragment();
                 my_planet_Fragment.setArguments(args);
 
@@ -81,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 my_pianet_fm.beginTransaction().replace(R.id.content_frame, my_planet_Fragment).commit();
                 break;
             case 2:
-                Fragment all_planet_Fragment = new all_planet_Fragment();
+                //所有星球
+                Fragment all_planet_Fragment = new All_planet_Fragment();
                 all_planet_Fragment.setArguments(args);
 
                 FragmentManager all_planet_fm = getFragmentManager();
@@ -99,5 +109,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         setSupportActionBar(mtoolbar);
         mtoolbar.setNavigationIcon(R.drawable.ic_drawer);
+    }
+
+    private void initContentView(){
+        Fragment home_Fragment = new Home_Fragment();
+
+        FragmentManager home_fm = getFragmentManager();
+        home_fm.beginTransaction().replace(R.id.content_frame, home_Fragment).commit();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.login:
+                Fragment login_Fragment = new Login_Fragment();
+                FragmentManager login_fm = getFragmentManager();
+                login_fm.beginTransaction().replace(R.id.content_frame, login_Fragment).commit();
+                break;
+            case R.id.registered:
+                Fragment regis_Fragment = new Registered_Fragment();
+                FragmentManager regis_fm = getFragmentManager();
+                regis_fm.beginTransaction().replace(R.id.content_frame, regis_Fragment).commit();
+                break;
+            default:
+                break;
+        }
+        mDrawerLayout.closeDrawer(mLinearLayout);
     }
 }

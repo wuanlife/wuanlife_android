@@ -24,7 +24,7 @@ public class My_Planet_Fragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.my_planet,container,false);
-        textView= (TextView) view.findViewById(R.id.textview1);
+        textView= (TextView) view.findViewById(R.id.my_planet_name);
         String text=getArguments().getString("text");
         //textView.setText("你好，这里是"+text);
 
