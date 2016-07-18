@@ -5,7 +5,7 @@
     android:padding="30dp">
 
     <EditText
-        android:id="@+id/regis_name"
+        android:id="@+id/regis_nickname"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:hint="昵称"
@@ -28,7 +28,7 @@
         android:layout_height="60dp"
         android:layout_below="@id/regis_password"/>
     <Button
-        android:id="@+id/registered_real"
+        android:id="@+id/regis_real"
         android:layout_width="120dp"
         android:layout_height="60dp"
         android:layout_below="@id/regis_jiange"

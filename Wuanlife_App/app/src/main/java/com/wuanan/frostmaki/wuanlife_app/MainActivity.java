@@ -12,19 +12,26 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.wuanan.frostmaki.wuanlife_app.All_planet.All_planet_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.Login_Register.Login_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.Login_Register.Registered_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.My_planet.My_Planet_Fragment;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,View.OnClickListener {
-    private DrawerLayout mDrawerLayout;
+    public DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ArrayList<String> menusLists;
     private ArrayAdapter<String> adapter;
-    private LinearLayout mLinearLayout;
-    private Button login_btn;
-    private Button registered_btn;
+    public LinearLayout mLinearLayout;
+    public Button login_btn;
+    public Button registered_btn;
 
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private Toolbar mtoolbar;
