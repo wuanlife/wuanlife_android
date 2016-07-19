@@ -46,13 +46,13 @@ public class My_planet_listview_BaseAdapter extends BaseAdapter{
         if (convertView==null){
             viewHolder=new ViewHolder();
             convertView= LayoutInflater.from(mContext).inflate(
-                    R.layout.my_planet_listview_item,parent,false);
+                    R.layout.posts_listview_item,parent,false);
             viewHolder.my_planet_listview_image=
-                    (ImageView) convertView.findViewById(R.id.my_planet_listView_item_image);
+                    (ImageView) convertView.findViewById(R.id.posts_image);
             viewHolder.my_planet_listview_text=
-                    (TextView) convertView.findViewById(R.id.my_planet_listView_item_text);
+                    (TextView) convertView.findViewById(R.id.posts_text);
             viewHolder.my_planet_listview_title=
-                    (TextView) convertView.findViewById(R.id.my_planet_listView_item_title);
+                    (TextView) convertView.findViewById(R.id.posts_title);
             viewHolder.my_planet_listview_image.setImageResource(R.drawable.ic_launcher);
             viewHolder.my_planet_listview_title.setText("我的星球的帖子de标题"+my_planet_arraylist.get(position));
             viewHolder.my_planet_listview_text.setText("我的星球的帖子的内容"+my_planet_arraylist.get(position));

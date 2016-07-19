@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.MyApplication;
 import com.wuanan.frostmaki.wuanlife_app.R;
 
 import org.json.JSONArray;
@@ -33,23 +34,24 @@ public class Login_http extends AsyncTask<String,String,String>{
     public Button login_Third;
     private Context mContext;
     private Activity activity;
-
+    private String ApiHost;
 
     public Login_http(Button login_sec,Activity activity,Context context){
         login_Third=login_sec;
         this.activity=activity;
         mContext=context;
+        ApiHost= MyApplication.getUrl();
     }
-    String Pr_URL="http://dev.wuanlife.com:800/?service=User.Login";
+
     @Override
     protected String doInBackground(String... params) {
         mail=params[0];
         password=params[1];
         BufferedReader reader;
+        String Pr_URL="http://"+ApiHost+"/?service=User.Login";
         try {
             String Real_URL = Pr_URL + "&Email=" +mail
                     + "&password=" + password;
-            Log.e("Real_URL", 1111+"");
 
             URL url=new URL(Real_URL);
             HttpURLConnection connection=(HttpURLConnection)url.openConnection();
@@ -62,9 +64,9 @@ public class Login_http extends AsyncTask<String,String,String>{
 
 
             InputStream in=connection.getInputStream();
-            Log.e( "doInBackground: ",in.toString() );
+
             reader=new BufferedReader(new InputStreamReader(in));
-            Log.e("reader",reader.toString());
+
 
             int responseCode=connection.getResponseCode();
             if(responseCode==200) {

@@ -46,7 +46,7 @@ public class Regis_http extends AsyncTask<String,String,String>{
         mail=params[1];
         password=params[2];
         BufferedReader reader;
-        String Pr_URL=ApiHost+"=User.Reg";
+        String Pr_URL="http://"+ApiHost+"/?service=User.Reg";
         try {
             String Real_URL = Pr_URL
                     + "&Email=" +mail
