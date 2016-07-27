@@ -13,8 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.MainActivity;
 import com.wuanan.frostmaki.wuanlife_app.MyApplication;
 import com.wuanan.frostmaki.wuanlife_app.R;
+import com.wuanan.frostmaki.wuanlife_app.Utils.Http_Url;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,18 +28,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Login_http extends AsyncTask<String,String,String>{
     private String mail;
     private String password;
-    public Button login_Third;
+    private Button login_Third;
+    private Button Regis_Third;
     private Context mContext;
     private Activity activity;
     private String ApiHost;
 
-    public Login_http(Button login_sec,Activity activity,Context context){
-        login_Third=login_sec;
+    public Login_http(Button login_sec,Button regis_sec,Activity activity,Context context){
+        login_Third=MainActivity.login_btn;
+        Regis_Third=MainActivity.registered_btn;
         this.activity=activity;
         mContext=context;
         ApiHost= MyApplication.getUrl();
@@ -49,44 +55,12 @@ public class Login_http extends AsyncTask<String,String,String>{
         password=params[1];
         BufferedReader reader;
         String Pr_URL="http://"+ApiHost+"/?service=User.Login";
-        try {
-            String Real_URL = Pr_URL + "&Email=" +mail
+
+        String Real_URL = Pr_URL + "&Email=" +mail
                     + "&password=" + password;
+        String resultData= Http_Url.getUrlReponse(Real_URL);
 
-            URL url=new URL(Real_URL);
-            HttpURLConnection connection=(HttpURLConnection)url.openConnection();
-            connection.setConnectTimeout(8000);
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setRequestProperty("Content-Type", "plain/text; charset=UTF-8");
-            connection.setRequestMethod("POST");
-
-
-            InputStream in=connection.getInputStream();
-
-            reader=new BufferedReader(new InputStreamReader(in));
-
-
-            int responseCode=connection.getResponseCode();
-            if(responseCode==200) {
-                String inputline = null;
-                String resultData = null;
-
-                while ((inputline = reader.readLine()) != null) {
-                    resultData = inputline + "\n";
-                }
-                Log.e("result",resultData);
-                return resultData;
-            }else{
-                Log.e("responseCode","ww"+responseCode);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-            Log.e("e",e+"");
-        }
-        return null;
+        return resultData;
     }
 
     @Override
@@ -99,7 +73,19 @@ public class Login_http extends AsyncTask<String,String,String>{
             if (code==1){
                 JSONObject info=data.getJSONObject("info");
                 String nickname=info.getString("nickname");
+                int userID=info.getInt("userID");
+                String email=info.getString("Email");
+                ArrayList<HashMap<String,String>> loginInfo=new ArrayList<HashMap<String,String>>();
+                HashMap<String,String> map=new HashMap<String, String>();
+                map.put("nickname",nickname);
+                map.put("userID",userID+"");
+                map.put("Email",email);
+                loginInfo.add(map);
+                MyApplication.setUserInfo(loginInfo);
                 login_Third.setText(nickname);
+
+                Regis_Third.setText("注销");
+
 
                 Toast.makeText(mContext,"登陆成功",Toast.LENGTH_SHORT).show();
                 initContentView();

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.MyApplication;
 import com.wuanan.frostmaki.wuanlife_app.R;
+import com.wuanan.frostmaki.wuanlife_app.Utils.Http_Url;
 
 import org.json.JSONObject;
 
@@ -20,6 +21,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Frostmaki on 2016/7/18.
@@ -30,11 +33,13 @@ public class Regis_http extends AsyncTask<String,String,String>{
     private String password;
     private Context mContext;
     private Button login_third;
+    private Button regis_third;
     private String ApiHost;
     private Activity activity;
 
-    public Regis_http(Button button,Activity activity,Context context){
-        login_third=button;
+    public Regis_http(Button button1,Button button2,Activity activity,Context context){
+        login_third=button1;
+        regis_third=button2;
         this.activity=activity;
         mContext=context;
         ApiHost= MyApplication.getUrl();
@@ -47,47 +52,14 @@ public class Regis_http extends AsyncTask<String,String,String>{
         password=params[2];
         BufferedReader reader;
         String Pr_URL="http://"+ApiHost+"/?service=User.Reg";
-        try {
-            String Real_URL = Pr_URL
-                    + "&Email=" +mail
-                    + "&nickname="+nickname
-                    + "&password=" + password;
-            Log.e( "doInBackground: ", Real_URL);
+        String Real_URL = Pr_URL
+                + "&Email=" +mail
+                + "&nickname="+nickname
+                + "&password=" + password;
+        Log.e( "注册URL ", Real_URL);
+        String resultData= Http_Url.getUrlReponse(Real_URL);
 
-            URL url=new URL(Real_URL);
-            HttpURLConnection connection=(HttpURLConnection)url.openConnection();
-            connection.setConnectTimeout(8000);
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setRequestProperty("Content-Type", "plain/text; charset=UTF-8");
-            connection.setRequestMethod("POST");
-
-
-            InputStream in=connection.getInputStream();
-            Log.e( "doInBackground: ",in.toString() );
-            reader=new BufferedReader(new InputStreamReader(in));
-            Log.e("reader",reader.toString());
-
-            int responseCode=connection.getResponseCode();
-            if(responseCode==200) {
-                String inputline = null;
-                String resultData = null;
-
-                while ((inputline = reader.readLine()) != null) {
-                    resultData = inputline + "\n";
-                }
-                Log.e("result",resultData);
-                return resultData;
-            }else{
-                Log.e("responseCode","ww"+responseCode);
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
-            Log.e("e",e+"");
-        }
-        return null;
+        return resultData;
     }
 
     @Override
@@ -101,7 +73,19 @@ public class Regis_http extends AsyncTask<String,String,String>{
             if (code==1){
                 JSONObject info=data.getJSONObject("info");
                 String nickname=info.getString("nickname");
+                int userId=info.getInt("userID");
+                String email=info.getString("Email");
+                ArrayList<HashMap<String,String>> regisInfo=new ArrayList<HashMap<String,String>>();
+                HashMap<String,String> map=new HashMap<String, String>();
+                map.put("nickname",nickname);
+                map.put("userID",userId+"");
+                map.put("Email",email);
+                regisInfo.add(map);
+                MyApplication.setUserInfo(regisInfo);
+
                 login_third.setText(nickname);
+
+                regis_third.setText("注销");
 
                 initContentView();
             }else if (code==0){

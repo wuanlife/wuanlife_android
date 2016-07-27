@@ -2,25 +2,31 @@ package com.wuanan.frostmaki.wuanlife_app;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.wuanan.frostmaki.wuanlife_app.All_planet.All_planet_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.GroupLists.All_planet_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Login_Register.Login_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Login_Register.Registered_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.My_planet.My_Planet_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.Utils.Http_Url;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,11 +36,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private ArrayList<String> menusLists;
     private ArrayAdapter<String> adapter;
     public LinearLayout mLinearLayout;
-    public Button login_btn;
-    public Button registered_btn;
+    public static Button login_btn;
+    public boolean isLogin=false;
+    public static Button registered_btn;
 
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private Toolbar mtoolbar;
+    private Handler handler=new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    login_btn.setText("登陆");
+                    registered_btn.setText("注册");
+                    Toast.makeText(MainActivity.this,"注销成功！！！",Toast.LENGTH_SHORT).show();
+                    isLogin=false;
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,12 +110,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 break;
             case 1:
                 //我的星球
-                Fragment my_planet_Fragment = new My_Planet_Fragment();
-                my_planet_Fragment.setArguments(args);
+                //if (MyApplication.getUserInfo()!=null) {
+                    Log.e("我的星球---->","q");
+                   Fragment my_planet_Fragment = new My_Planet_Fragment();
+                    my_planet_Fragment.setArguments(args);
 
-                FragmentManager my_pianet_fm = getFragmentManager();
-                my_pianet_fm.beginTransaction().replace(R.id.content_frame, my_planet_Fragment).commit();
-                break;
+                   FragmentManager my_pianet_fm = getFragmentManager();
+                    my_pianet_fm.beginTransaction().replace(R.id.content_frame, my_planet_Fragment).commit();
+                    break;
+
             case 2:
                 //所有星球
                 Fragment all_planet_Fragment = new All_planet_Fragment();
@@ -129,18 +152,53 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
-                Fragment login_Fragment = new Login_Fragment();
-                FragmentManager login_fm = getFragmentManager();
-                login_fm.beginTransaction().replace(R.id.content_frame, login_Fragment).commit();
-                break;
+                if (isLogin==false) {
+                    Fragment login_Fragment = new Login_Fragment();
+                    FragmentManager login_fm = getFragmentManager();
+                    login_fm.beginTransaction().replace(R.id.content_frame, login_Fragment).commit();
+                    isLogin=true;
+                }
+                    break;
             case R.id.registered:
-                Fragment regis_Fragment = new Registered_Fragment();
-                FragmentManager regis_fm = getFragmentManager();
-                regis_fm.beginTransaction().replace(R.id.content_frame, regis_Fragment).commit();
-                break;
+                if (isLogin==false) {
+                    Fragment regis_Fragment = new Registered_Fragment();
+                    FragmentManager regis_fm = getFragmentManager();
+                    regis_fm.beginTransaction().replace(R.id.content_frame, regis_Fragment).commit();
+                    isLogin=true;
+                }else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String ApiHost=MyApplication.getUrl();
+                            String UStatus="http://"+ApiHost+"/?service=Group.UStatus&user_id="+login_btn.getText().toString();
+                            String resultData= Http_Url.getUrlReponse(UStatus);
+                            try {
+                                JSONObject jsonObject = new JSONObject(resultData);
+                                JSONObject data=jsonObject.getJSONObject("data");
+                                int code =data.getInt("code");
+                                if (code==1){
+                                    Message message=new Message();
+                                    message.what=0;
+                                    handler.sendMessage(message);
+                                    MyApplication.setUserInfo(null);
+
+                                }else if (code==0){
+                                    Toast.makeText(MainActivity.this,"注销失败！请重新尝试....",Toast.LENGTH_SHORT).show();
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                Log.e("zhuxiao",e+"");
+                            }
+                        }
+                    }).start();
+
+                }
+                    break;
             default:
                 break;
         }
         mDrawerLayout.closeDrawer(mLinearLayout);
     }
+
+
 }

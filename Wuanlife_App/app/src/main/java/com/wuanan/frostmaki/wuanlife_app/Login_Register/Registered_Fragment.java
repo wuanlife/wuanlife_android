@@ -22,7 +22,8 @@ public class Registered_Fragment extends Fragment {
     private EditText password;
     private Button regis_real;
     private MainActivity activity;
-    public Button login_Sec;
+    private Button login_Sec;
+    private Button regis_Sec;
     private Regis_http regis_http;
     @Nullable
     @Override
@@ -34,15 +35,18 @@ public class Registered_Fragment extends Fragment {
         regis_real= (Button) view.findViewById(R.id.regis_real);
         activity=(MainActivity)getActivity();
         login_Sec=activity.login_btn;
+        regis_Sec=activity.registered_btn;
 
         regis_real.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nicknameText=nickname.getText().toString();
-                String EmailText=Email.getText().toString();
-                String passwordText=password.getText().toString();
-                regis_http=new Regis_http(login_Sec, activity,getActivity().getApplicationContext());
-                regis_http.execute(nicknameText,EmailText,passwordText);
+
+                    String nicknameText = nickname.getText().toString();
+                    String EmailText = Email.getText().toString();
+                    String passwordText = password.getText().toString();
+                    regis_http = new Regis_http(login_Sec, regis_Sec, activity, getActivity().getApplicationContext());
+                    regis_http.execute(nicknameText, EmailText, passwordText);
+
             }
         });
         return view;

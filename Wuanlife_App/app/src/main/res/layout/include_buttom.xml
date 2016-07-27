@@ -9,7 +9,7 @@
         android:layout_alignParentLeft="true"
         android:text="上一页"/>
     <Button
-        android:id="@+id/current"
+        android:id="@+id/currentPage"
         android:layout_width="80dp"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"

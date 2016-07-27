@@ -6,30 +6,32 @@
     android:paddingRight="10dp">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
         <TextView
-            android:id="@+id/all_planet_name"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:text="星球名称"
+            android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="25sp"/>
-
+            android:textSize="25sp"
+            />
         <Button
-            android:id="@+id/create_planet"
+            android:id="@+id/nothingButton"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:text="加入"/>
+            android:visibility="visible"
+             />
     </RelativeLayout>
-
-    <ListView
-        android:id="@+id/planet_details_listview"
+    <TextView
+        android:id="@+id/nothing"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"></ListView>
+        android:layout_height="match_parent"
+        android:text="暂时什么都没有...."
+        android:gravity="center"
+        android:textSize="30sp"
 
-    <include layout="@layout/include_buttom"/>
+         />
 
 </LinearLayout>

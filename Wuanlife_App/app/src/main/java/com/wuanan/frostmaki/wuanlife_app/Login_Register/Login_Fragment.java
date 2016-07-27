@@ -29,6 +29,7 @@ public class Login_Fragment extends Fragment{
     private String password;
     private Login_http loginAsyncTask;
     private Button login_Sec;
+    private Button regis_Sec;
     private MainActivity activity;
     @Nullable
     @Override
@@ -39,16 +40,18 @@ public class Login_Fragment extends Fragment{
         login_real= (Button) view.findViewById(R.id.login_real);
         activity=(MainActivity)getActivity();
         login_Sec =activity.login_btn;
-
+        regis_Sec=activity.registered_btn;
 
         login_real.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mail=login_mail.getText().toString();
-                password=login_password.getText().toString();
 
-                loginAsyncTask=new Login_http(login_Sec,activity,getActivity().getApplicationContext());
-                loginAsyncTask.execute(mail,password);
+                    mail = login_mail.getText().toString();
+                    password = login_password.getText().toString();
+
+                    loginAsyncTask = new Login_http(login_Sec, regis_Sec, activity, getActivity().getApplicationContext());
+                    loginAsyncTask.execute(mail, password);
+
             }
         });
         return view;
