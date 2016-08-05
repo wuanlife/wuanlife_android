@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_app.GroupLists.All_planet_Fragment;
@@ -32,6 +33,8 @@ import java.util.HashMap;
 public class Create_planet_Fragment extends Fragment{
     private Button button;
     private EditText name;
+    private EditText introduction;
+    private ImageView image;
     private Context mContext;
     private Handler handler=new Handler(){
         @Override
@@ -62,6 +65,9 @@ public class Create_planet_Fragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.create_planet,container,false);
         name= (EditText) view.findViewById(R.id.create_planet_edit);
+        introduction= (EditText) view.findViewById(R.id.editText);
+        image= (ImageView) view.findViewById(R.id.imageView);
+
         button= (Button) view.findViewById(R.id.create_planet_btn);
         mContext=getActivity().getApplicationContext();
         button.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +85,9 @@ public class Create_planet_Fragment extends Fragment{
                                 String userID = MyApplication.getUserInfo().get(0).get("userID");
                                 String ApiHost = MyApplication.getUrl();
                                 String Pre_URL = "http://" + ApiHost + "/?service=Group.Create&user_id=" + userID +
-                                        "&name=" + name.getText().toString();
+                                        "&name=" + name.getText().toString()
+                                        +"&g_introduction="+introduction.getText().toString()
+                                        +"&g_image="+"null";
                                 String resultData = Http_Url.getUrlReponse(Pre_URL);
                                 try {
                                     JSONObject jsonObject = new JSONObject(resultData);

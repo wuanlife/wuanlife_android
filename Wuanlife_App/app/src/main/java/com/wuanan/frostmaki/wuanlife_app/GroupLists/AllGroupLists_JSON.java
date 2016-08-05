@@ -31,35 +31,40 @@ public class AllGroupLists_JSON {
             JSONArray lists=data.getJSONArray("lists");
             arraylist=new ArrayList<HashMap<String, String>>();
             Log.e("posts.length",lists.length()+"");
-            for (int i=0;i<lists.length();++i){
-                currentPage=data.getInt("currentPage");
-                pageCount=data.getInt("pageCount");
+            if (lists.length()>0) {
+                for (int i = 0; i < lists.length(); ++i) {
+                    currentPage = data.getInt("currentPage");
+                    pageCount = data.getInt("pageCount");
 
-                map=new HashMap<String, String>();
-                JSONObject lists_details=lists.getJSONObject(i);
-                title=lists_details.getString("name");
-                text=lists_details.getString("g_introduction");
-                image=lists_details.getString("g_image");
-                num=lists_details.getInt("num");
-                id=lists_details.getInt("id");
+                    map = new HashMap<String, String>();
+                    JSONObject lists_details = lists.getJSONObject(i);
+                    title = lists_details.getString("name");
+                    text = lists_details.getString("g_introduction");
+                    image = lists_details.getString("g_image");
+                    num = lists_details.getInt("num");
+                    id = lists_details.getInt("id");
 
-                map.put("num",num+"");
-                map.put("id",id+"");
-                map.put("currentPage",currentPage+"");
-                map.put("pageCount",pageCount+"");
-                map.put("title",title);
-                map.put("text",text);
-                map.put("image",image);
-                arraylist.add(map);
+                    map.put("num", num + "");
+                    map.put("id", id + "");
+                    map.put("currentPage", currentPage + "");
+                    map.put("pageCount", pageCount + "");
+                    map.put("title", title);
+                    map.put("text", text);
+                    map.put("image", image);
+                    arraylist.add(map);
 
+                }
+
+                MyApplication.setGroupListInfo(arraylist);
+                return arraylist;
+            }else {
+                return null;
             }
-            MyApplication.setGroupListInfo(arraylist);
-            return arraylist;
             //Log.e( "onPostExecute: ",arraylist.get(0).get("text")+"" );
             //Log.e( "onPostExecute: ",arraylist.get(3).get("title")+"" );
         }catch (Exception e){
             e.printStackTrace();
-            Log.e( "onPostExecute: ",e+"" );
+            Log.e( "ALLGroup  Exception ",e+"" );
         }
         return null;
     }

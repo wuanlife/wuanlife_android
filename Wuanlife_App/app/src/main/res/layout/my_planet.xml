@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     android:paddingLeft="15dp"
     android:paddingRight="15dp">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    >
     <TextView
         android:id="@+id/my_planet_name"
         android:layout_width="140dp"
@@ -12,31 +15,30 @@
         android:text="我的星球"
         android:gravity="center"
         android:textSize="25sp"/>
+
+
+</RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal">
+        android:layout_height="120dp"
+        android:orientation="vertical"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp">
         <Button
             android:id="@+id/group_fir"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:text="我创建的星球"
+            />
         <Button
             android:id="@+id/group_Sec"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <Button
-            android:id="@+id/group_Third"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-        <Button
-            android:id="@+id/four"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:text="我加入的星球"
+            />
     </LinearLayout>
+
+
     <ListView
         android:id="@+id/my_planet_listView"
         android:layout_width="match_parent"

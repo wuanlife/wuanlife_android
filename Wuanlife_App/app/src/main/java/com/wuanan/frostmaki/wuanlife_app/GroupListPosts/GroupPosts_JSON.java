@@ -2,6 +2,8 @@ package com.wuanan.frostmaki.wuanlife_app.GroupListPosts;
 
 import android.util.Log;
 
+import com.wuanan.frostmaki.wuanlife_app.MyApplication;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -42,62 +44,60 @@ public class GroupPosts_JSON {
 
             JSONArray posts = data.getJSONArray("posts");
             arraylist=new ArrayList<HashMap<String, String>>();
-            Log.e("Groupposts.length", posts.length() + "");
-            for (int i = 0; i < posts.length(); ++i) {
+            Log.e("Groupposts_JSON.length", posts.length() + "");
+            if (posts.length()>0) {
+                for (int i = 0; i < posts.length(); ++i) {
 
-                maps = new HashMap<String, String>();
+                    maps = new HashMap<String, String>();
 
-                JSONObject posts_details = posts.getJSONObject(i);
+                    JSONObject posts_details = posts.getJSONObject(i);
 
-                digest=posts_details.getString("digest");
-                postID=posts_details.getString("postID");
-                title = posts_details.getString("title");
-                text = posts_details.getString("text");
-                createTime = posts_details.getString("createTime");
-                id=posts_details.getString("id");
-                nickname = posts_details.getString("nickname");
-                sticky=posts_details.getString("sticky");
+                    digest = posts_details.getString("digest");
+                    postID = posts_details.getString("postID");
+                    title = posts_details.getString("title");
+                    text = posts_details.getString("text");
+                    createTime = posts_details.getString("createTime");
+                    id = posts_details.getString("id");
+                    nickname = posts_details.getString("nickname");
+                    sticky = posts_details.getString("sticky");
 
-                JSONArray imageRes=posts_details.getJSONArray("image");
-                if (imageRes.length()==1){
-                    image0=imageRes.getString(0);
-                }else if (imageRes.length()==2){
-                    image0=imageRes.getString(0);
-                    image1=imageRes.getString(1);
-                }else if (imageRes.length()>=3){
-                    image0=imageRes.getString(0);
-                    image1=imageRes.getString(1);
-                    image2=imageRes.getString(2);
+                    JSONArray imageRes = posts_details.getJSONArray("image");
+                    if (imageRes.length() == 1) {
+                        image0 = imageRes.getString(0);
+                    } else if (imageRes.length() == 2) {
+                        image0 = imageRes.getString(0);
+                        image1 = imageRes.getString(1);
+                    } else if (imageRes.length() >= 3) {
+                        image0 = imageRes.getString(0);
+                        image1 = imageRes.getString(1);
+                        image2 = imageRes.getString(2);
+                    }
+
+                    maps.put("title", title);
+                    maps.put("nickname", nickname);
+                    maps.put("groupName", groupName);
+                    maps.put("groupID", groupID);
+                    maps.put("createTime", createTime);
+                    maps.put("text", text);
+                    maps.put("image0", image0);
+                    maps.put("image1", image1);
+                    maps.put("image2", image2);
+                    maps.put("postID", postID);
+                    maps.put("digest", digest);
+                    maps.put("sticky", sticky);
+                    maps.put("id", id);
+                    maps.put("currentPage", currentPage + "");
+                    maps.put("pageCount", pageCount + "");
+
+                    arraylist.add(maps);
+
                 }
-                //image = posts_details.getString("image");
-                /*Log.e("anuanl","title:       "+title+
-                                "nickname:   "+nickname+
-                                "groupName:  "+groupName+
-                                "createTime: "+createTime+
-                                "text:       "+text+
-                                "image:      "+image);*/
-                maps.put("title", title);
-                maps.put("nickname", nickname);
-                maps.put("groupName", groupName);
-                maps.put("groupID",groupID);
-                maps.put("createTime", createTime);
-                maps.put("text", text);
-                maps.put("image0", image0);
-                maps.put("image1", image1);
-                maps.put("image2", image2);
-                maps.put("postID",postID);
-                maps.put("digest",digest);
-                maps.put("sticky",sticky);
-                maps.put("id",id);
-                maps.put("currentPage",currentPage+"");
-                maps.put("pageCount",pageCount+"");
+                MyApplication.setGroupPostsInfo(arraylist);
+                return arraylist;
 
-                arraylist.add(maps);
-
+            }else {
+                return null;
             }
-            return arraylist;
-            //Log.e( "onPostExecute: ",arraylist.get(0).get("text")+"" );
-            //Log.e( "onPostExecute: ",arraylist.get(3).get("title")+"" );
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("GroupListPost异常 ", e + "");

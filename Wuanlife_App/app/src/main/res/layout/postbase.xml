@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+
+    <ScrollView
+        android:id="@+id/postbase_scr"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include layout="@layout/postbase_content"/>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/replyEdit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/reply_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="回复"/>
+    </LinearLayout>
+
+</RelativeLayout>

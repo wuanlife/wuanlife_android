@@ -23,7 +23,7 @@ import com.wuanan.frostmaki.wuanlife_app.GroupLists.All_planet_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Home.Home_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Login_Register.Login_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Login_Register.Registered_Fragment;
-import com.wuanan.frostmaki.wuanlife_app.My_planet.My_Planet_Fragment;
+import com.wuanan.frostmaki.wuanlife_app.MyGroup.MyGroupPosts_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.Utils.Http_Url;
 
 import org.json.JSONObject;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //动态插入一个Fragment到FrameLayout
         Bundle args = new Bundle();
-        args.putString("text", menusLists.get(position));
+        args.putString("name", menusLists.get(position));
         switch (position){
             case 0:
                 //首页
@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 //我的星球
                 //if (MyApplication.getUserInfo()!=null) {
                     Log.e("我的星球---->","q");
-                   Fragment my_planet_Fragment = new My_Planet_Fragment();
-                    my_planet_Fragment.setArguments(args);
+                   Fragment my_planet_Fragment = new MyGroupPosts_Fragment();
+                    //my_planet_Fragment.setArguments(args);
 
                    FragmentManager my_pianet_fm = getFragmentManager();
                     my_pianet_fm.beginTransaction().replace(R.id.content_frame, my_planet_Fragment).commit();

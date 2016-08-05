@@ -39,6 +39,7 @@ public class All_planet_Fragment extends Fragment implements View.OnClickListene
     private BaseAdapter all_planet_baseAdapter;
     private Context mContext;
     private int index=1;
+    private int pageCount=1;
 
     private Handler handler=new Handler(){
         @Override
@@ -50,7 +51,7 @@ public class All_planet_Fragment extends Fragment implements View.OnClickListene
                             mContext,
                             arrayList,
                             currentPage);
-
+                    pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
                     all_planet_ListView.setAdapter(all_planet_baseAdapter);
             }
         }
@@ -88,7 +89,7 @@ public class All_planet_Fragment extends Fragment implements View.OnClickListene
             case R.id.create_planet:
                 Fragment create_planet_Fragment = new Create_planet_Fragment();
                 FragmentManager create_planet_fm = getFragmentManager();
-                create_planet_fm.beginTransaction().replace(R.id.content_frame, create_planet_Fragment).commit();
+                create_planet_fm.beginTransaction().replace(R.id.content_frame, create_planet_Fragment).addToBackStack(null).commit();
                 break;
             case R.id.pre:
                 if (index>1){
@@ -101,7 +102,7 @@ public class All_planet_Fragment extends Fragment implements View.OnClickListene
                 break;
             case R.id.next:
 
-                if (index<all_planet_arrayList.size()) {
+                if (index<pageCount) {
                     ++index;
                     getRes();
                     all_planet_baseAdapter.notifyDataSetChanged();
@@ -123,7 +124,7 @@ public class All_planet_Fragment extends Fragment implements View.OnClickListene
         Fragment planet_details_Fragment = new GroupListsPosts_Fragment();
         planet_details_Fragment.setArguments(bundle);
         FragmentManager planet_details_fm = getFragmentManager();
-        planet_details_fm.beginTransaction().replace(R.id.content_frame, planet_details_Fragment).commit();
+        planet_details_fm.beginTransaction().replace(R.id.content_frame, planet_details_Fragment).addToBackStack(null).commit();
     }
 
     public void getRes(){

@@ -2,6 +2,7 @@ package com.wuanan.frostmaki.wuanlife_app.Home;
 
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,16 +12,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.wuanan.frostmaki.wuanlife_app.MyApplication;
+import com.wuanan.frostmaki.wuanlife_app.Post.Posts_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.R;
 import com.wuanan.frostmaki.wuanlife_app.Utils.Http_Url;
-import com.wuanan.frostmaki.wuanlife_app.Utils.Posts_JSON;
 import com.wuanan.frostmaki.wuanlife_app.Utils.Posts_listview_BaseAdapter;
 
 import java.util.ArrayList;
@@ -28,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Home_Fragment extends Fragment implements View.OnClickListener{
+public class Home_Fragment extends Fragment implements View.OnClickListener,AdapterView.OnItemClickListener{
 
     private TextView name;
     private ListView home_ListView;
@@ -38,6 +41,7 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
 
     public Context mContext;
     private int index=1;
+    private int pageCount=1;
     private Button pre;
     private Button next;
     private Button currentPage;
@@ -49,12 +53,12 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
                     ArrayList<HashMap<String,String>> arrayList=(ArrayList<HashMap<String,String>>)msg.obj;
                     //将首页帖子信息传到MyApplication中，作为全局变量。
                     MyApplication.setHomePostsInfo(arrayList);
-
+Log.e("HomeArrayList",arrayList.size()+"");
                     home_baseAdapter = new Posts_listview_BaseAdapter(
                             mContext,
                             arrayList,
                             currentPage);
-
+pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
                             home_ListView.setAdapter(home_baseAdapter);
             }
         }
@@ -74,6 +78,7 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
 
         mContext=getActivity().getApplicationContext();
         home_ListView= (ListView) view.findViewById(R.id.home_listView);
+        home_ListView.setOnItemClickListener(this);
         home_arrayList=new ArrayList<HashMap<String,String>>();
 
         pre= (Button) view.findViewById(R.id.pre);
@@ -99,7 +104,10 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
                 String JsonData= Http_Url.getUrlReponse(Pr_URL);
 
                 if (JsonData!=null) {
-                    home_arrayList = Posts_JSON.getJSONParse(JsonData);
+                    home_arrayList = HomePosts_JSON.getJSONParse(JsonData);
+                    //设置首页帖子信息；
+                    MyApplication.setHomePostsInfo(home_arrayList);
+
                     Message message = new Message();
                     message.what = 0;
                     message.obj = home_arrayList;
@@ -129,7 +137,7 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
                 break;
             case R.id.next:
 
-                    if (index<home_arrayList.size()) {
+                    if (index<pageCount) {
                         ++index;
                         getRes();
                         home_baseAdapter.notifyDataSetChanged();
@@ -144,4 +152,19 @@ public class Home_Fragment extends Fragment implements View.OnClickListener{
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (MyApplication.getUserInfo()==null){
+            Toast.makeText(mContext,"未登录",Toast.LENGTH_SHORT).show();
+        }else {
+            String data1 = MyApplication.getHomePostsInfo().get(position).get("postID");
+            Bundle bundle = new Bundle();
+            bundle.putString("postID", data1);
+
+            Posts_Fragment posts_fragment = new Posts_Fragment();
+            posts_fragment.setArguments(bundle);
+            FragmentManager fm = getFragmentManager();
+            fm.beginTransaction().replace(R.id.content_frame, posts_fragment).addToBackStack(null).commit();
+        }
+    }
 }

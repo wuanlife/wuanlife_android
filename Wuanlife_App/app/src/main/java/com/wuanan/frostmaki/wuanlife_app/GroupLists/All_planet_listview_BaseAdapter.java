@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wuanan.frostmaki.wuanlife_app.R;
+import com.wuanan.frostmaki.wuanlife_app.Utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,10 +61,19 @@ public class All_planet_listview_BaseAdapter extends BaseAdapter{
         }else {
             viewHolder= (ViewHolder) convertView.getTag();
         }
-        viewHolder.all_planet_listview_image.setImageResource(R.drawable.ic_null);
+
         viewHolder.all_planet_listview_title.setText(arraylist.get(position).get("title"));
         viewHolder.all_planet_listview_text.setText(arraylist.get(position).get("text"));
         currentPage.setText(arraylist.get(position).get("currentPage")+" / "+arraylist.get(position).get("pageCount"));
+
+        viewHolder.all_planet_listview_image.setImageResource(R.drawable.ic_launcher);
+        String urlTag=arraylist.get(position).get("image");
+        if (urlTag!=null) {
+            //viewHolder.all_planet_listview_image.setVisibility(View.VISIBLE);
+            viewHolder.all_planet_listview_image.setTag(urlTag);
+            new ImageLoader().showImageByThread(viewHolder.all_planet_listview_image, urlTag);
+        }
+
         return convertView;
     }
 

@@ -3,13 +3,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+    android:paddingRight="10dp"
+    android:background="#fef3d1">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
         <TextView
-            android:id="@+id/all_planet_name"
+            android:id="@+id/groupName"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:text="星球名称"
@@ -17,19 +19,34 @@
             android:textSize="25sp"/>
 
         <Button
-            android:id="@+id/create_planet"
+            android:id="@+id/GroupPosts_JoinOrCreate"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:text="加入"/>
     </RelativeLayout>
 
+<LinearLayout
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
     <ListView
         android:id="@+id/planet_details_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"></ListView>
+        android:layout_weight="1"
+        ></ListView>
 
     <include layout="@layout/include_buttom"/>
-
+</LinearLayout>
+    <TextView
+        android:id="@+id/post_nothing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="暂时什么都没有...."
+        android:gravity="center"
+        android:textSize="30sp"
+        android:visibility="gone"/>
 </LinearLayout>

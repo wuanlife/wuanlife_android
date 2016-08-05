@@ -18,7 +18,7 @@ public static String getUrlReponse(String s) {
     String resultDatayhkk=null;
 
     try {
-        Log.e("Resource",RESOURCE);
+        Log.e("Http_url  Resource-->",RESOURCE);
         BufferedReader reader;
         URL url = new URL(RESOURCE);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -43,7 +43,7 @@ public static String getUrlReponse(String s) {
             while ((inputline = reader.readLine()) != null) {
                 resultData = inputline + "\n";
             }
-            //Log.e("JsonData---->",resultData);
+
             return resultData;
         }
     } catch (Exception e) {

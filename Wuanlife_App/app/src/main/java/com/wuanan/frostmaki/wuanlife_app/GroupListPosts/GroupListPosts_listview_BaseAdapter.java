@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wuanan.frostmaki.wuanlife_app.R;
+import com.wuanan.frostmaki.wuanlife_app.Utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class GroupListPosts_listview_BaseAdapter extends BaseAdapter {
         if (arraylist.size()==0){
             Log.e( "arrayList: ","0" );
         }else {
-            Log.e("GroupListPosts.size()",arraylist.size()+"");
+            Log.e("GroupListPosts.size()>",arraylist.size()+"");
             if (convertView == null) {
                 viewHolder = new ViewHolder();
                 convertView = LayoutInflater.from(mContext).inflate(
@@ -63,8 +64,9 @@ public class GroupListPosts_listview_BaseAdapter extends BaseAdapter {
                 viewHolder.posts_groupname = (TextView) convertView.findViewById(R.id.posts_groupname);
                 viewHolder.posts_createTime = (TextView) convertView.findViewById(R.id.posts_createTtime);
                 viewHolder.posts_text = (TextView) convertView.findViewById(R.id.posts_text);
-                viewHolder.posts_image = (ImageView) convertView.findViewById(R.id.posts_image);
-
+                viewHolder.posts_image01 = (ImageView) convertView.findViewById(R.id.posts_image01);
+                viewHolder.posts_image02 = (ImageView) convertView.findViewById(R.id.posts_image02);
+                viewHolder.posts_image03 = (ImageView) convertView.findViewById(R.id.posts_image03);
                 //viewHolder.home_listview_image.setImageResource(R.drawable.ic_launcher);
 
                 convertView.setTag(viewHolder);
@@ -79,18 +81,30 @@ public class GroupListPosts_listview_BaseAdapter extends BaseAdapter {
             viewHolder.posts_text.setText(arraylist.get(position).get("text"));
             currentPage.setText(arraylist.get(position).get("currentPage")+" / "+
                     arraylist.get(position).get("pageCount"));
-            Log.e("image1",arraylist.get(position).get("image1"));
-            Log.e("image2",arraylist.get(position).get("image2"));
-            /*try {
-                //URL url=new URL(arraylist.get(position).get("image"));
-                Uri uri=Uri.parse(arraylist.get(position).get("image"));
-                viewHolder.home_posts_image.setImageURI(uri);
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
 
-            }*/
-            //(arraylist.get(position).get("image"));
+            viewHolder.posts_image01.setVisibility(View.GONE);
+            String urlTag01=arraylist.get(position).get("image01");
+            if (urlTag01!=null) {
+                viewHolder.posts_image01.setVisibility(View.VISIBLE);
+                viewHolder.posts_image01.setTag(urlTag01);
+                new ImageLoader().showImageByThread(viewHolder.posts_image01, urlTag01);
+            }
+
+            viewHolder.posts_image02.setVisibility(View.GONE);
+            String urlTag02=arraylist.get(position).get("image02");
+            if (urlTag02!=null) {
+                viewHolder.posts_image02.setVisibility(View.VISIBLE);
+                viewHolder.posts_image02.setTag(urlTag02);
+                new ImageLoader().showImageByThread(viewHolder.posts_image02, urlTag02);
+            }
+
+            viewHolder.posts_image03.setVisibility(View.GONE);
+            String urlTag03=arraylist.get(position).get("image03");
+            if (urlTag03!=null) {
+                viewHolder.posts_image03.setVisibility(View.VISIBLE);
+                viewHolder.posts_image03.setTag(urlTag03);
+                new ImageLoader().showImageByThread(viewHolder.posts_image03, urlTag03);
+            }
         }
 
         return convertView;
@@ -102,6 +116,8 @@ public class GroupListPosts_listview_BaseAdapter extends BaseAdapter {
         TextView posts_groupname;
         TextView posts_createTime;
         TextView posts_text;
-        ImageView posts_image;
+        ImageView posts_image01;
+        ImageView posts_image02;
+        ImageView posts_image03;
     }
 }

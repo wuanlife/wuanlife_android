@@ -16,22 +16,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="星球名称"
+        android:layout_marginTop="37dp"
         android:layout_below="@+id/create_planet_name"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="91dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:id="@+id/create_planet_Fri"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_below="@+id/create_planet_edit"/>
     <Button
         android:id="@+id/create_planet_btn"
         android:layout_width="120dp"
         android:layout_height="50dp"
-        android:layout_below="@+id/create_planet_Fri"
-        android:layout_centerHorizontal="true"
-        android:text="创建"/>
+        android:text="创建"
+        android:layout_marginBottom="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="星球介绍"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:id="@+id/imageView"
+        android:layout_above="@+id/create_planet_btn"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
