@@ -46,4 +46,13 @@
         android:layout_above="@+id/create_planet_btn"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择图片"
+        android:id="@+id/button"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_toLeftOf="@+id/create_planet_btn"
+        android:layout_toStartOf="@+id/create_planet_btn" />
+
 </RelativeLayout>

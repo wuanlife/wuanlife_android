@@ -92,6 +92,12 @@ android:paddingTop="10dp"
         android:gravity="end">
 
         <Button
+            android:id="@+id/sticky"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:text="置顶"/>
+        <Button
             android:id="@+id/edit"
             android:layout_width="80dp"
             android:layout_height="match_parent"

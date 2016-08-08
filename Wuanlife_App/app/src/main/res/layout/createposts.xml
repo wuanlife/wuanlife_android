@@ -16,20 +16,40 @@
     <EditText
         android:id="@+id/text"
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="124dp"
         android:background="#3ab1af" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="30dp"
+
         >
     <Button
         android:id="@+id/determine"
         android:layout_width="120dp"
         android:layout_height="60dp"
-        android:text="determine"
-        android:layout_centerHorizontal="true"
-        android:background="#3ab1af" />
+        android:text="确定"
+        android:background="#3ab1af"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="选择图片"
+            android:id="@+id/button2"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="46dp"
+            android:layout_marginStart="46dp" />
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/imageView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
 
     </RelativeLayout>

@@ -6,7 +6,8 @@
     android:paddingLeft="30dp"
     android:paddingRight="30dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:background="#fef3d1">
 
 
     <ScrollView
@@ -27,7 +28,8 @@
             android:id="@+id/replyEdit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:background="#fef3d1" />
         <Button
             android:id="@+id/reply_btn"
             android:layout_width="wrap_content"

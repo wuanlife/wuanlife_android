@@ -54,6 +54,7 @@ public class MyGroupCreate_Fragment extends Fragment implements View.OnClickList
                             mContext,
                             arrayList,
                             currentPage);
+                    index=Integer.parseInt(arrayList.get(0).get("currentPage"));
                     pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
                     myGroupJoin_ListView.setAdapter(myGroupJoin_baseAdapter);
             }
@@ -71,6 +72,7 @@ public class MyGroupCreate_Fragment extends Fragment implements View.OnClickList
         pre= (Button) view.findViewById(R.id.pre);
         next= (Button) view.findViewById(R.id.next);
         currentPage= (Button) view.findViewById(R.id.currentPage);
+
         createGroup.setOnClickListener(this);
         pre.setOnClickListener(this);
         next.setOnClickListener(this);
@@ -174,7 +176,7 @@ public class MyGroupCreate_Fragment extends Fragment implements View.OnClickList
                 String ApiHost = MyApplication.getUrl();
                 String userid = MyApplication.getUserInfo().get(0).get("userID");
                 String Pr_URL = "http://" + ApiHost
-                        + "?service=Group.GetCreate" +"&user_id="+ userid;
+                        + "?service=Group.GetCreate" +"&user_id="+ userid+"&page="+index;
                 String resultData = Http_Url.getUrlReponse(Pr_URL);
                 try {
                     JSONObject jsonObject=new JSONObject(resultData);

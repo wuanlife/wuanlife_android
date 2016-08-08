@@ -101,4 +101,11 @@ public class MyApplication {
         MyGroupPostsArraylists=info;
     }
 
+
+    private static String uptoken ="drhxTyPuxNKJJ4SuDUhxGb-Osh_q52icfG8xak06:Xdp34ylO7AN1KbJvaUqfcYcMQRk=:eyJzY29wZSI6ImV4YW1wbGUwMyIsImRlYWRsaW5lIjoxNDcwNjg0MDk5fQ==";
+
+    public static  String getUptoken(){
+        return uptoken;
+    }
+
 }

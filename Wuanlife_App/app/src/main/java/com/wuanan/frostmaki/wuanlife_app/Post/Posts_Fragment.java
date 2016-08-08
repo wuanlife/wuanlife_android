@@ -50,9 +50,11 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
     private String image02=null;
     private String image03=null;
 
+    private Button stickyPost;
     private Button editPost;
     private Button deletePost;
     private int BtnRight=1;//youquanxian
+    private boolean isSticky=false;
 
 
 
@@ -103,6 +105,13 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
                     if (Integer.parseInt(hashMap01.get("deleteRight"))==BtnRight){
                         deletePost.setVisibility(View.VISIBLE);
                     }
+                    if (Integer.parseInt(hashMap01.get("stickyRight"))==BtnRight){
+                        stickyPost.setVisibility(View.VISIBLE);
+                        if (Integer.parseInt(hashMap01.get("sticky"))==BtnRight){
+                            isSticky=true;
+                            stickyPost.setText("取消置顶");
+                        }
+                    }
 
                     if (hashMap01.get("image01")!=null){
 
@@ -144,7 +153,8 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
                     adapter.notifyDataSetChanged();
                     break;
                 case 5:
-                    Toast.makeText(mContext,"删帖成功",Toast.LENGTH_SHORT).show();
+                    //删帖 置顶
+                    Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -167,9 +177,11 @@ title= (TextView) view.findViewById(R.id.postBase_title);
         imageView02= (ImageView) view.findViewById(R.id.postBase_image02);
         imageView03= (ImageView) view.findViewById(R.id.postBase_image03);
 
+        stickyPost= (Button) view.findViewById(R.id.sticky);
         editPost= (Button) view.findViewById(R.id.edit);
         deletePost= (Button) view.findViewById(R.id.delete);
 
+        stickyPost.setOnClickListener(this);
         editPost.setOnClickListener(this);
         deletePost.setOnClickListener(this);
         //回复ListView
@@ -197,6 +209,19 @@ title= (TextView) view.findViewById(R.id.postBase_title);
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.sticky:
+                if (isSticky==false){
+                    //置顶成功
+                    stickyPost();
+                    isSticky=true;
+                    stickyPost.setText("取消置顶");
+                }else {
+                    //取消置顶成功
+                    UnstickyPost();
+                    isSticky=false;
+                    stickyPost.setText("置顶");
+                }
+                break;
             case R.id.edit:
                 Bundle bundle=new Bundle();
                 bundle.putString("postID",posts_id);
@@ -379,10 +404,64 @@ title= (TextView) view.findViewById(R.id.postBase_title);
                     if (code==1){
                         Message message = new Message();
                         message.what = 5;
-
+                        message.obj="删帖成功";
                         handler.sendMessage(message);
                     }
                 }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void stickyPost(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String userID = MyApplication.getUserInfo().get(0).get("userID");
+
+                String ApiHost=MyApplication.getUrl();
+                String Pre_URL="http://"+ApiHost+"/?service=Post.StickyPost"
+                        +"&user_id="+userID
+                        +"&post_id="+posts_id;
+                String resultData= Http_Url.getUrlReponse(Pre_URL);
+                try {
+                    JSONObject jsonObject=new JSONObject(resultData);
+                    int code=jsonObject.getJSONObject("data").getInt("code");
+                    if (code==1){
+                        Message message = new Message();
+                        message.what = 5;
+                        message.obj="z置顶成功";
+                        handler.sendMessage(message);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void UnstickyPost(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String userID = MyApplication.getUserInfo().get(0).get("userID");
+
+                String ApiHost=MyApplication.getUrl();
+                String Pre_URL="http://"+ApiHost+"/?service=Post.UnStickyPost"
+                        +"&user_id="+userID
+                        +"&post_id="+posts_id;
+                String resultData= Http_Url.getUrlReponse(Pre_URL);
+                try {
+                    JSONObject jsonObject=new JSONObject(resultData);
+                    int code=jsonObject.getJSONObject("data").getInt("code");
+                    if (code==1){
+                        Message message = new Message();
+                        message.what = 5;
+                        message.obj="z取消置顶成功";
+                        handler.sendMessage(message);
+                    }
+                }catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -98,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.setUserInfo(null);
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //动态插入一个Fragment到FrameLayout
         Bundle args = new Bundle();

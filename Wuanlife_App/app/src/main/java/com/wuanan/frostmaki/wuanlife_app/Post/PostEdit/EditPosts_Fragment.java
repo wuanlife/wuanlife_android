@@ -73,6 +73,7 @@ public class EditPosts_Fragment extends Fragment implements View.OnClickListener
                     Toast.makeText(mContext,"没写内容",Toast.LENGTH_SHORT).show();
                 }else {
                     getRes();
+                    getFragmentManager().popBackStack();
                 }
                 break;
 

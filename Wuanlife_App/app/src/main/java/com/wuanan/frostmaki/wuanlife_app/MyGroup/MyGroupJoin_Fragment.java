@@ -55,6 +55,7 @@ public class MyGroupJoin_Fragment extends Fragment implements View.OnClickListen
                             mContext,
                             arrayList,
                             currentPage);
+                    index=Integer.parseInt(arrayList.get(0).get("currentPage"));
                     pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
                     myGroupJoin_ListView.setAdapter(myGroupJoin_baseAdapter);
             }
