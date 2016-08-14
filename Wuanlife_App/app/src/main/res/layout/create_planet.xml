@@ -19,7 +19,8 @@
         android:layout_marginTop="37dp"
         android:layout_below="@+id/create_planet_name"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:maxLength="20" />
 
     <Button
         android:id="@+id/create_planet_btn"

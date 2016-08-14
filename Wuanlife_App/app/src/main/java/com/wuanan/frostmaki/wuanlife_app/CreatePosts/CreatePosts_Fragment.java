@@ -58,6 +58,10 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
     private String Title="";
     private String Text="";
     private String p_image=null;
+    private String data=null;
+    private Thread1 t1;
+    private BtnThread btnThread;
+
     private HashMap<String,String> hashMap=null;
     private Handler handler=new Handler(){
         @Override
@@ -66,6 +70,7 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
                 case 0:
                     Toast.makeText(mContext,"fa帖子成功",Toast.LENGTH_SHORT).show();
                     //zhuan到页面
+                    getFragmentManager().popBackStack();
             }
         }
     };
@@ -84,6 +89,8 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
         selectImage.setOnClickListener(this);
 
         uploadManager=new UploadManager();
+        t1=new Thread1();
+        btnThread=new BtnThread();
 
         return view;
     }
@@ -98,8 +105,11 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
                 }else if (text.getText().toString()==null){
                     Toast.makeText(mContext,"没写内容",Toast.LENGTH_SHORT).show();
                 }else {
-                    getRes();
-                    getFragmentManager().popBackStack();
+
+                    if(!btnThread.isAlive()){
+                        btnThread.start();
+                    }
+
                 }
                 break;
 
@@ -115,12 +125,13 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
 
     }
 
-    private void getRes(){
-        new Thread(new Runnable() {
-            @Override
+    class BtnThread extends Thread{
+
             public void run() {
                 try {
                     userID = MyApplication.getUserInfo().get(0).get("userID");
+                    t1.join();
+                    BtnThread.sleep(3000);
 
                     GroupID = getArguments().getString("groupId");
                     Title=title.getText().toString();
@@ -149,8 +160,8 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
                     Log.e("createPosts.Thread异常",e+"");
                 }
             }
-        }).start();
-    }
+        }
+
 
     private static int CAMERA_REQUEST_CODE = 1;
     private static int GALLERY_REQUEST_CODE = 2;
@@ -190,7 +201,7 @@ private String uptoken=MyApplication.getUptoken();
             }{
                 Uri uri;
                 uri=data.getData();
-                Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
                 Uri fileUri=convertUri(uri);
                 startiImageZoom(fileUri);
             }
@@ -294,32 +305,44 @@ private String uptoken=MyApplication.getUptoken();
         //bm.compress(Bitmap.CompressFormat.PNG, 60, stream);
         // byte[] bytes = stream.toByteArray();
         //byte[] data=Base64.encode(bytes, Base64.DEFAULT);
+        data=s;
 
-        String data=s;
-        Log.e("data--->",data+"");
+        t1.start();
 
-        Log.e("qiniutest", "starting......");
-        //String upkey = "uploadtest.png";
-        String upkey=null;
-        uploadManager.put(
-                data,
-                null, uptoken, new UpCompletionHandler() {
-                    public void complete(String key, ResponseInfo rinfo, JSONObject response) {
-                        String s = key + ", "+ "\n"  + rinfo + ", " + "\n" + response;
-                        Log.e("qiniutest", s);
-                        if (response!=null) {
-                            try {
-                                String responseKey = response.getString("key");
-                                Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
-                                p_image="http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                Log.e("e", e + "");
-                            }
-                        }
-
-
-                    }
-                }, new UploadOptions(null, "test-type", true, null, null));
     }
+
+
+    class Thread1 extends Thread{
+
+        @Override
+        public void run() {
+
+            Log.e("data--->",data+"");
+
+            Log.e("qiniutest", "starting......");
+            //String upkey = "uploadtest.png";
+            String upkey=null;
+            uploadManager.put(
+                    data,
+                    null, uptoken, new UpCompletionHandler() {
+                        public void complete(String key, ResponseInfo rinfo, JSONObject response) {
+                            String s = key + ", "+ "\n"  + rinfo + ", " + "\n" + response;
+                            Log.e("qiniutest", s);
+                            if (response!=null) {
+                                try {
+                                    String responseKey = response.getString("key");
+                                    Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
+                                    p_image="http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Log.e("e", e + "");
+                                }
+                            }
+
+
+                        }
+                    }, new UploadOptions(null, "test-type", true, null, null));
+        }
+    }
+
 }

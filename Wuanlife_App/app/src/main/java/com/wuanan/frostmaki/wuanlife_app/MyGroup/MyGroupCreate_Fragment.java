@@ -161,70 +161,72 @@ public class MyGroupCreate_Fragment extends Fragment implements View.OnClickList
         new Thread(new Runnable() {
             @Override
             public void run() {
-                myGroupJoin_arrayList=new ArrayList<HashMap<String, String>>();
-                HashMap<String,String> map=null;
-                String name="";
-                String id="";
-                String g_image="";
-                String g_introduction="";
+                myGroupJoin_arrayList = new ArrayList<HashMap<String, String>>();
+                HashMap<String, String> map = null;
+                String name = "";
+                String id = "";
+                String g_image = "";
+                String g_introduction = "";
 
-                String m_num="";
-                String m_pageCount="";
-                String m_currentPage="";
-                String m_user_name="";
+                String m_num = "";
+                String m_pageCount = "";
+                String m_currentPage = "";
+                String m_user_name = "";
 
                 String ApiHost = MyApplication.getUrl();
-                String userid = MyApplication.getUserInfo().get(0).get("userID");
-                String Pr_URL = "http://" + ApiHost
-                        + "?service=Group.GetCreate" +"&user_id="+ userid+"&page="+index;
-                String resultData = Http_Url.getUrlReponse(Pr_URL);
-                try {
-                    JSONObject jsonObject=new JSONObject(resultData);
-                    if (jsonObject.getInt("ret")==200) {
-                        JSONObject data = jsonObject.getJSONObject("data");
-                        m_num = data.getString("num");
-                        m_currentPage = data.getString("currentPage");
-                        m_pageCount = data.getString("pageCount");
-                        m_user_name = data.getString("user_name");
+                if (MyApplication.getUserInfo() != null) {
+                    String userid = MyApplication.getUserInfo().get(0).get("userID");
+                    String Pr_URL = "http://" + ApiHost
+                            + "?service=Group.GetCreate" + "&user_id=" + userid + "&page=" + index;
+                    String resultData = Http_Url.getUrlReponse(Pr_URL);
+                    try {
+                        JSONObject jsonObject = new JSONObject(resultData);
+                        if (jsonObject.getInt("ret") == 200) {
+                            JSONObject data = jsonObject.getJSONObject("data");
+                            m_num = data.getString("num");
+                            m_currentPage = data.getString("currentPage");
+                            m_pageCount = data.getString("pageCount");
+                            m_user_name = data.getString("user_name");
 
-                        JSONArray groups = data.getJSONArray("groups");
-                        if (groups.length() != 0) {
-                            for (int i = 0; i < groups.length(); ++i) {
-                                JSONObject groups_details = groups.getJSONObject(i);
-                                map = new HashMap<String, String>();
+                            JSONArray groups = data.getJSONArray("groups");
+                            if (groups.length() != 0) {
+                                for (int i = 0; i < groups.length(); ++i) {
+                                    JSONObject groups_details = groups.getJSONObject(i);
+                                    map = new HashMap<String, String>();
 
-                                name = groups_details.getString("name");
-                                id = groups_details.getString("id");
-                                g_introduction = groups_details.getString("g_introduction");
-                                g_image = groups_details.getString("g_image");
+                                    name = groups_details.getString("name");
+                                    id = groups_details.getString("id");
+                                    g_introduction = groups_details.getString("g_introduction");
+                                    g_image = groups_details.getString("g_image");
 
-                                map.put("title", name);
-                                map.put("id", id);
-                                map.put("text", g_introduction);
-                                map.put("image", g_image);
+                                    map.put("title", name);
+                                    map.put("id", id);
+                                    map.put("text", g_introduction);
+                                    map.put("image", g_image);
 
-                                map.put("num", m_num);
-                                map.put("currentPage", m_currentPage);
-                                map.put("pageCount", m_pageCount);
-                                map.put("user_name", m_user_name);
+                                    map.put("num", m_num);
+                                    map.put("currentPage", m_currentPage);
+                                    map.put("pageCount", m_pageCount);
+                                    map.put("user_name", m_user_name);
 
-                                myGroupJoin_arrayList.add(map);
+                                    myGroupJoin_arrayList.add(map);
+                                }
+                                if (myGroupJoin_arrayList != null) {
+                                    Log.e("myGroupJoin_arrayList", "jiazai");
+                                    MyApplication.setGroupListInfo(myGroupJoin_arrayList);
+                                    Message message = new Message();
+                                    message.what = 0;
+                                    message.obj = myGroupJoin_arrayList;
+                                    handler.sendMessage(message);
+                                }
                             }
-                            if (myGroupJoin_arrayList != null) {
-                                Log.e("myGroupJoin_arrayList","jiazai");
-                                MyApplication.setGroupListInfo(myGroupJoin_arrayList);
-                                Message message = new Message();
-                                message.what = 0;
-                                message.obj = myGroupJoin_arrayList;
-                                handler.sendMessage(message);
-                            }
+                        } else {
+
                         }
-                    }else {
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("wo加入的星球异常", e + "");
                     }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Log.e("wo加入的星球异常",e+"");
                 }
             }
         }).start();

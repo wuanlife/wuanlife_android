@@ -2,6 +2,8 @@ package com.wuanan.frostmaki.wuanlife_app;
 
 import android.app.Application;
 
+import com.qiniu.util.Auth;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -104,8 +106,23 @@ public class MyApplication {
 
     private static String uptoken ="drhxTyPuxNKJJ4SuDUhxGb-Osh_q52icfG8xak06:Xdp34ylO7AN1KbJvaUqfcYcMQRk=:eyJzY29wZSI6ImV4YW1wbGUwMyIsImRlYWRsaW5lIjoxNDcwNjg0MDk5fQ==";
 
+    //设置好账号的ACCESS_KEY和SECRET_KEY
+    static String ACCESS_KEY = "drhxTyPuxNKJJ4SuDUhxGb-Osh_q52icfG8xak06";
+    static String SECRET_KEY = "9YIvfr_SCvk8ertcYZMTze-tR1nLn2gwrBJAeEqJ";
+    //要上传的空间
+    static String bucketname = "example03";
     public static  String getUptoken(){
-        return uptoken;
+        Auth auth=Auth.create(ACCESS_KEY,SECRET_KEY);
+        return auth.uploadToken(bucketname);
+    }
+    public static String getAccessKey(){
+        return ACCESS_KEY;
+    }
+    public static String getSecretKey(){
+        return SECRET_KEY;
+    }
+    public static String getBucketname(){
+        return bucketname;
     }
 
 }

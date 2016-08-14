@@ -155,6 +155,7 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
                 case 5:
                     //删帖 置顶
                     Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    getFragmentManager().popBackStack();
                     break;
             }
         }

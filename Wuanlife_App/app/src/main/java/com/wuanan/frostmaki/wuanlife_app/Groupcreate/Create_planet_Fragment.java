@@ -25,6 +25,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
+import com.qiniu.util.Auth;
 import com.wuanan.frostmaki.wuanlife_app.GroupLists.All_planet_Fragment;
 import com.wuanan.frostmaki.wuanlife_app.MyApplication;
 import com.wuanan.frostmaki.wuanlife_app.R;
@@ -55,6 +56,10 @@ public class Create_planet_Fragment extends Fragment{
     private Context mContext;
     private View view;
     private String g_imageUrl=null;
+    private String data=null;
+    private Thread1 t1;
+    private BtnThread btnThread;
+
     UploadManager uploadManager;
     private Handler handler=new Handler(){
         @Override
@@ -62,9 +67,10 @@ public class Create_planet_Fragment extends Fragment{
             switch (msg.what){
                 case 0:
                     Toast.makeText(mContext, "星球创建成功", Toast.LENGTH_SHORT).show();
-                    Fragment all_planet_Fragment = new All_planet_Fragment();
-                    FragmentManager all_planet_fm = getFragmentManager();
-                    all_planet_fm.beginTransaction().replace(R.id.content_frame, all_planet_Fragment).commit();
+                    //Fragment all_planet_Fragment = new All_planet_Fragment();
+                    //FragmentManager all_planet_fm = getFragmentManager();
+                    //all_planet_fm.beginTransaction().replace(R.id.content_frame, all_planet_Fragment).commit();
+                    getFragmentManager().popBackStack();
                     break;
                 case 1:
                     String failure=msg.obj.toString();
@@ -83,99 +89,29 @@ public class Create_planet_Fragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view=inflater.inflate(R.layout.create_planet,container,false);
-        name= (EditText) view.findViewById(R.id.create_planet_edit);
-        introduction= (EditText) view.findViewById(R.id.editText);
-        image= (ImageView) view.findViewById(R.id.imageView);
+        view = inflater.inflate(R.layout.create_planet, container, false);
+        name = (EditText) view.findViewById(R.id.create_planet_edit);
+        introduction = (EditText) view.findViewById(R.id.editText);
+        image = (ImageView) view.findViewById(R.id.imageView);
+        btnThread=new BtnThread();
+        t1=new Thread1();
 
-        button= (Button) view.findViewById(R.id.create_planet_btn);
-        mContext=getActivity().getApplicationContext();
+        button = (Button) view.findViewById(R.id.create_planet_btn);
+        mContext = getActivity().getApplicationContext();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String GroupName=name.getText().toString();
-                if (GroupName.length()>0){
-                    Log.e("创建星球","开始创建");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.e("创建星球","开始线程");
-                            if (MyApplication.getUserInfo() != null) {
+                String GroupName = name.getText().toString();
+                if (GroupName.length() > 0) {
+                    Log.e("创建星球", "开始创建");
+                    if(!btnThread.isAlive()){
+                        btnThread.start();
+                    }
 
-                                String userID = MyApplication.getUserInfo().get(0).get("userID");
-                                String ApiHost = MyApplication.getUrl();
-                                String Pre_URL = "http://" + ApiHost + "/?service=Group.Create&user_id=" + userID +
-                                        "&name=" + name.getText().toString()
-                                        +"&g_introduction="+introduction.getText().toString()
-                                        +"&g_image="+g_imageUrl;
-                                String resultData = Http_Url.getUrlReponse(Pre_URL);
-                                try {
-                                    JSONObject jsonObject = new JSONObject(resultData);
-                                    JSONObject data = jsonObject.getJSONObject("data");
-                                    int code = data.getInt("code");
-                                    if (code == 1) {
-                                        JSONObject info = data.getJSONObject("info");
-                                        ArrayList<HashMap<String, String>> createGroupInfo = new ArrayList<HashMap<String, String>>();
-                                        HashMap<String, String> map = new HashMap<String, String>();
-                                        String group_base_id = "";//星球ID
-                                        int user_base_id = 0;//用户ID
-                                        String authorization = "";//用户权限 01表示创建者，02表示管理员，03表示会员
-                                        String name = "";//星球名字
-                                        String g_introduction = "";//星球简介
-                                        String URL = "";//星球图片资源
-
-                                        group_base_id = info.getString("group_base_id");
-                                        user_base_id = info.getInt("user_base_id");
-                                        authorization = info.getString("authorization");
-                                        name = info.getString("name");
-                                        g_introduction = info.getString("g_introduction");
-                                        URL = info.getString("URL");
-
-                                        map.put("group_base_id", group_base_id);
-                                        map.put("user_base_id", user_base_id + "");
-                                        map.put("authorization", authorization);
-                                        map.put("name", name);
-                                        map.put("g_introduction", g_introduction);
-                                        map.put("URL", URL);
-                                        createGroupInfo.add(map);
-
-                                        Log.e("创建星球","创建成功");
-                                        Message message=new Message();
-                                        message.what=0;
-                                        handler.sendMessage(message);
-
-                                    } else if (code==0){
-                                        Log.e("创建星球","创建失败"+resultData);
-                                        String msg=data.getString("msg");
-                                        Message message=new Message();
-                                        message.what=1;
-                                        message.obj=msg;
-                                        handler.sendMessage(message);
-
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    Log.e("创建星球","异常"+e);
-                                }
-
-                            }else {
-                                Log.e("创建星球","未登录");
-                                Message message=new Message();
-                                message.what=2;
-                                handler.sendMessage(message);
-
-                            }
-                        }
-                    }).start();
-                }else Toast.makeText(mContext, "未输入星球名称", Toast.LENGTH_SHORT).show();
-
-
-
-
-
+                } else Toast.makeText(mContext, "未输入星球名称", Toast.LENGTH_SHORT).show();
             }
         });
-uploadManager=new UploadManager();
+        uploadManager=new UploadManager();
         selectImage= (Button) view.findViewById(R.id.button);
         selectImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,6 +123,93 @@ uploadManager=new UploadManager();
         });
         return view;
     }
+
+
+        class BtnThread extends Thread{
+            public void run(){
+                try {
+                    t1.join();
+                    BtnThread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                        Log.e("创建星球","开始线程");
+                        if (MyApplication.getUserInfo() != null) {
+
+                            String userID = MyApplication.getUserInfo().get(0).get("userID");
+                            String ApiHost = MyApplication.getUrl();
+
+                            String Pre_URL = "http://" + ApiHost + "/?service=Group.Create&user_id=" + userID +
+                                    "&name=" + name.getText().toString()
+                                    +"&g_introduction="+introduction.getText().toString()
+                                    +"&g_image="+g_imageUrl;
+                            String resultData = Http_Url.getUrlReponse(Pre_URL);
+                            try {
+                                JSONObject jsonObject = new JSONObject(resultData);
+                                JSONObject data = jsonObject.getJSONObject("data");
+                                int code = data.getInt("code");
+                                if (code == 1) {
+                                    JSONObject info = data.getJSONObject("info");
+                                    ArrayList<HashMap<String, String>> createGroupInfo = new ArrayList<HashMap<String, String>>();
+                                    HashMap<String, String> map = new HashMap<String, String>();
+                                    String group_base_id = "";//星球ID
+                                    int user_base_id = 0;//用户ID
+                                    String authorization = "";//用户权限 01表示创建者，02表示管理员，03表示会员
+                                    String name = "";//星球名字
+                                    String g_introduction = "";//星球简介
+                                    String URL = "";//星球图片资源
+
+                                    group_base_id = info.getString("group_base_id");
+                                    user_base_id = info.getInt("user_base_id");
+                                    authorization = info.getString("authorization");
+                                    name = info.getString("name");
+                                    g_introduction = info.getString("g_introduction");
+                                    URL = info.getString("URL");
+
+                                    map.put("group_base_id", group_base_id);
+                                    map.put("user_base_id", user_base_id + "");
+                                    map.put("authorization", authorization);
+                                    map.put("name", name);
+                                    map.put("g_introduction", g_introduction);
+                                    map.put("URL", URL);
+                                    createGroupInfo.add(map);
+
+                                    Log.e("创建星球","创建成功");
+                                    Message message=new Message();
+                                    message.what=0;
+                                    handler.sendMessage(message);
+
+                                } else if (code==0){
+                                    Log.e("创建星球","创建失败"+resultData);
+                                    String msg=data.getString("msg");
+                                    Message message=new Message();
+                                    message.what=1;
+                                    message.obj=msg;
+                                    handler.sendMessage(message);
+
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e("创建星球","异常"+e);
+                            }
+
+                        }else {
+                            Log.e("创建星球","未登录");
+                            Message message=new Message();
+                            message.what=2;
+                            handler.sendMessage(message);
+
+                        }
+                    }
+                }
+
+
+
+
+
+
+
 
     private static int CAMERA_REQUEST_CODE = 1;
     private static int GALLERY_REQUEST_CODE = 2;
@@ -226,7 +249,7 @@ uploadManager=new UploadManager();
             }{
                 Uri uri;
                 uri=data.getData();
-                Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext,uri.toString(),Toast.LENGTH_SHORT).show();
                 Uri fileUri=convertUri(uri);
                 startiImageZoom(fileUri);
             }
@@ -238,8 +261,9 @@ uploadManager=new UploadManager();
             Bitmap bitmap=bundle.getParcelable("data");
             if (bitmap!=null){
                 ImageView imageView= (ImageView) view.findViewById(R.id.imageView);
-                imageView.setImageBitmap(bitmap);
+
                 saveBitmapAndGetPath(bitmap);
+                imageView.setImageBitmap(bitmap);
             }
         }
     }
@@ -325,37 +349,59 @@ uploadManager=new UploadManager();
 
     }
 
+    String AccessKey=MyApplication.getAccessKey();
+    String SecretKey=MyApplication.getSecretKey();
+    String bucketname=MyApplication.getBucketname();
+
+    private String getUptoken(){
+        Auth auth=Auth.create(AccessKey,SecretKey);
+        return auth.uploadToken(bucketname);
+    }
     private void sendImage(String s) {
         //ByteArrayOutputStream stream = new ByteArrayOutputStream();
         //bm.compress(Bitmap.CompressFormat.PNG, 60, stream);
         // byte[] bytes = stream.toByteArray();
         //byte[] data=Base64.encode(bytes, Base64.DEFAULT);
+        data=s;
 
-        String data=s;
-        Log.e("data--->",data+"");
+        t1.start();
 
-        Log.e("qiniutest", "starting......");
-        //String upkey = "uploadtest.png";
-        String upkey=null;
-        uploadManager.put(
-                data,
-                null, uptoken, new UpCompletionHandler() {
-            public void complete(String key, ResponseInfo rinfo, JSONObject response) {
-                String s = key + ", "+ "\n"  + rinfo + ", " + "\n" + response;
-                Log.e("qiniutest", s);
-                if (response!=null) {
-                    try {
-                        String responseKey = response.getString("key");
-                        Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
-                        g_imageUrl="http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.e("e", e + "");
-                    }
-                }
-
-
-            }
-        }, new UploadOptions(null, "test-type", true, null, null));
     }
+    class Thread1 extends Thread {
+
+
+        public void run () {
+            //String data = s;
+            Log.e("data--->", data + "");
+
+            Log.e("qiniutest", "starting......");
+            //String upkey = "uploadtest.png";
+
+            String upkey = null;
+
+
+            uploadManager.put(
+                    data,
+                    null, getUptoken(), new UpCompletionHandler() {
+                        public void complete(String key, ResponseInfo rinfo, JSONObject response) {
+                            String s = key + ", " + "\n" + rinfo + ", " + "\n" + response;
+                            Log.e("qiniutest", s);
+                            if (response != null) {
+                                try {
+                                    String responseKey = response.getString("key");
+                                    Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
+                                    g_imageUrl = "http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    Log.e("e", e + "");
+                                }
+                            }
+
+
+                        }
+                    }, new UploadOptions(null, "test-type", true, null, null));
+        }
+    }
+
 }
