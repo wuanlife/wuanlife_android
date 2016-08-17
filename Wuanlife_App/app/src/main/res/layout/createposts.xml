@@ -17,7 +17,8 @@
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="124dp"
-        android:background="#3ab1af" />
+        android:background="#3ab1af"
+        android:gravity="left|top"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

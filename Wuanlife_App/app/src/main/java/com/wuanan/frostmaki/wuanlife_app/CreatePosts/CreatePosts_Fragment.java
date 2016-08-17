@@ -11,6 +11,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -71,6 +76,10 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
                     Toast.makeText(mContext,"fa帖子成功",Toast.LENGTH_SHORT).show();
                     //zhuan到页面
                     getFragmentManager().popBackStack();
+                    break;
+                case 1:
+                    text.append((CharSequence) msg.obj);
+                    break;
             }
         }
     };
@@ -136,6 +145,7 @@ public class CreatePosts_Fragment extends Fragment implements View.OnClickListen
                     GroupID = getArguments().getString("groupId");
                     Title=title.getText().toString();
                     Text=text.getText().toString();
+                    Log.e("Text",Text);
                     String ApiHost=MyApplication.getUrl();
                     String Pre_URL="http://"+ApiHost+"/?service=Group.Posts"
                             +"&user_id="+userID
@@ -213,7 +223,7 @@ private String uptoken=MyApplication.getUptoken();
             Bitmap bitmap=bundle.getParcelable("data");
             if (bitmap!=null){
                 ImageView imageView= (ImageView) view.findViewById(R.id.imageView);
-                imageView.setImageBitmap(bitmap);
+                //imageView.setImageBitmap(bitmap);
                 saveBitmapAndGetPath(bitmap);
             }
         }
@@ -331,8 +341,11 @@ private String uptoken=MyApplication.getUptoken();
                             if (response!=null) {
                                 try {
                                     String responseKey = response.getString("key");
-                                    Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
-                                    p_image="http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
+                                    Log.e("Url", "http://"+MyApplication.getYuMing()+"/" + responseKey);
+                                    p_image="http://"+MyApplication.getYuMing()+"/"+ responseKey;
+                                    Thread2 t2=new Thread2(p_image);
+                                    t2.start();
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                     Log.e("e", e + "");
@@ -342,6 +355,40 @@ private String uptoken=MyApplication.getUptoken();
 
                         }
                     }, new UploadOptions(null, "test-type", true, null, null));
+        }
+    }
+    class Thread2 extends Thread{
+        String str=null;
+       public Thread2(String s){
+            str=s;
+        }
+
+
+        @Override
+        public void run() {
+            //String s="http://b.hiphotos.baidu.com/image/h%3D360/sign=8918c5efbe3eb1355bc7b1bd961ea8cb/7a899e510fb30f244bb50504ca95d143ad4b038d.jpg";
+            try {
+                URL url=new URL(str);
+                HttpURLConnection httpURLConnection= (HttpURLConnection) url.openConnection();
+                InputStream inputStream=httpURLConnection.getInputStream();
+                Bitmap bitmap=BitmapFactory.decodeStream(inputStream);
+                SpannableString spannableString=new SpannableString("<img src="+str+">");
+
+                ImageSpan imageSpan=new ImageSpan(mContext,
+                        bitmap);
+                spannableString.setSpan(imageSpan,0,spannableString.length(),SpannableString.SPAN_MARK_MARK);
+
+                Message message=new Message();
+                message.obj=spannableString;
+                message.what=1;
+                handler.sendMessage(message);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

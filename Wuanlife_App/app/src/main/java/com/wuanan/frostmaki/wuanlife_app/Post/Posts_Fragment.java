@@ -3,11 +3,15 @@ package com.wuanan.frostmaki.wuanlife_app.Post;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +32,15 @@ import com.wuanan.frostmaki.wuanlife_app.Utils.ImageLoader;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Frostmaki on 2016/7/30.
@@ -97,7 +108,91 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
                     nickname.setText(hashMap01.get("nickName"));
                     GroupName.setText(hashMap01.get("groupName"));
                     createTime.setText(hashMap01.get("createTime"));
-                    mainText.setText(hashMap01.get("text"));
+                    //mainText.setText(hashMap01.get("text"));
+                    String source=hashMap01.get("text");
+                    //Log.e("source",source);
+                    //String pattern="<img[^>|/s]?src[=][^>]*[>]";
+                    //String pattern="<img.*src=((.*?)[^>]*?)>";
+                    String pattern="<img\\ssrc=([^>]*)>";
+                    Pattern p=Pattern.compile(pattern);
+                    Matcher m = p.matcher(source);
+                    Boolean real=source.matches(pattern);
+
+                    System.out.println(m.groupCount());
+
+                    int start=0;
+                    int end=0;
+                    getTextThread t2=null;
+                    while (m.find()){
+                        //Log.e("group(0)",m.group(0));
+                        //Log.e("group(1)",m.group(1));
+                        //Log.e("start()", String.valueOf(m.start()));
+
+                        //Log.e("end()", String.valueOf(m.end()));
+                        start=m.start();
+                        if ((start-end)==0){
+
+                            end=m.end();
+                            t2=new getTextThread(m.group(1));
+                            t2.start();
+                            //Log.e("无前方","00");
+
+                        }else {
+
+                            String sub=null;
+                            sub = source.substring(end, start );
+
+                            if (t2!=null) {
+                                try {
+                                    //System.out.println(t2.isAlive());
+                                    t2.join();
+                                    //System.out.println(t2.isAlive());
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }else {
+
+                            }
+                            Log.e("sub",sub);
+                            Message message=Message.obtain();
+                            message.what=6;
+                            message.obj=sub;
+                            handler.sendMessage(message);
+                            //editText2.append(sub);
+                            //Log.e("you前方","qianfang");
+                            end=m.end();
+
+                            t2=new getTextThread(m.group(1));
+                            t2.start();
+
+                            //Log.e("有前方","后方");
+                        }
+
+                        //editText2.setText(m.group(1));
+                    }
+                    //Log.e("reault end", String.valueOf(end));
+                    //Log.e("source.length()", String.valueOf(source.length()));
+                    if ((source.length())>end){
+
+                        if (t2!=null) {
+                            try {
+                                //System.out.println(t2.isAlive());
+                                t2.join();
+                                //System.out.println(t2.isAlive());
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }else {
+                            //System.out.println(t2.isAlive());
+                        }
+                        //Log.e("最后","后方");
+                        String little=source.substring(end,source.length());
+                        Message message=Message.obtain();
+                        message.what=6;
+                        message.obj=little;
+                        handler.sendMessage(message);
+                        //editText2.append(little);
+                    }
                     //imageView01.setImageURI(hashMap01.get("image"));
                     if (Integer.parseInt(hashMap01.get("editRight"))==BtnRight){
                         editPost.setVisibility(View.VISIBLE);
@@ -156,6 +251,9 @@ public class Posts_Fragment extends Fragment implements View.OnClickListener{
                     //删帖 置顶
                     Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     getFragmentManager().popBackStack();
+                    break;
+                case 6:
+                    mainText.append((CharSequence) msg.obj);
                     break;
             }
         }
@@ -467,5 +565,41 @@ title= (TextView) view.findViewById(R.id.postBase_title);
                 }
             }
         }).start();
+    }
+    class getTextThread extends Thread {
+        String str = null;
+
+        public getTextThread(String s) {
+            str = s;
+        }
+
+        @Override
+        public void run() {
+            //String s="http://b.hiphotos.baidu.com/image/h%3D360/sign=8918c5efbe3eb1355bc7b1bd961ea8cb/7a899e510fb30f244bb50504ca95d143ad4b038d.jpg";
+            try {
+                URL url = new URL(str);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                SpannableString spannableString = new SpannableString("<img src=" + str + ">");
+
+                ImageSpan imageSpan = new ImageSpan(mContext,
+                        bitmap);
+
+                spannableString.setSpan(imageSpan, 0, spannableString.length(), SpannableString.SPAN_MARK_MARK);
+
+
+                Message message = new Message();
+                message.what = 6;
+                message.obj = spannableString;
+                handler.sendMessage(message);
+
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

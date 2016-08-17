@@ -107,10 +107,12 @@ public class MyApplication {
     private static String uptoken ="drhxTyPuxNKJJ4SuDUhxGb-Osh_q52icfG8xak06:Xdp34ylO7AN1KbJvaUqfcYcMQRk=:eyJzY29wZSI6ImV4YW1wbGUwMyIsImRlYWRsaW5lIjoxNDcwNjg0MDk5fQ==";
 
     //设置好账号的ACCESS_KEY和SECRET_KEY
-    static String ACCESS_KEY = "drhxTyPuxNKJJ4SuDUhxGb-Osh_q52icfG8xak06";
-    static String SECRET_KEY = "9YIvfr_SCvk8ertcYZMTze-tR1nLn2gwrBJAeEqJ";
+    static String ACCESS_KEY = "fOCmqJDZvBUZCL9lGSbN1sl1_cVNuV7f7ns0bcfs";
+    static String SECRET_KEY = "GWhI_igD2NcqaomXi0fv8R_j8fnGVvH6tJPLwLFk";
     //要上传的空间
-    static String bucketname = "example03";
+    static String bucketname = "wuanlife";
+    //域名
+    static String yuMing="7xlx4u.com1.z0.glb.clouddn.com";
     public static  String getUptoken(){
         Auth auth=Auth.create(ACCESS_KEY,SECRET_KEY);
         return auth.uploadToken(bucketname);
@@ -123,6 +125,9 @@ public class MyApplication {
     }
     public static String getBucketname(){
         return bucketname;
+    }
+    public static String getYuMing(){
+        return yuMing;
     }
 
 }

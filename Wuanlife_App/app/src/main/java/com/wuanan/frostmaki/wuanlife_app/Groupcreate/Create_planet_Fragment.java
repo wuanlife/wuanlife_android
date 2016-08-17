@@ -389,8 +389,8 @@ public class Create_planet_Fragment extends Fragment{
                             if (response != null) {
                                 try {
                                     String responseKey = response.getString("key");
-                                    Log.e("Url", "http://obkpv2vzz.bkt.clouddn.com/" + responseKey);
-                                    g_imageUrl = "http://obkpv2vzz.bkt.clouddn.com/" + responseKey;
+                                    Log.e("Url", "http://"+MyApplication.getYuMing()+"/" + responseKey);
+                                    g_imageUrl = "http://"+MyApplication.getYuMing()+"/" + responseKey;
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
