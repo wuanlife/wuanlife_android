@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="25dp">
+    <TextView
+        android:id="@+id/replyCount"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+
+        android:gravity="center"
+        android:text="0 个回复"/>
+    <ListView
+        android:id="@+id/replyListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:dividerHeight="8dp"
+        >
+    </ListView>
+    <LinearLayout
+        android:id="@+id/postBase_linera03"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/pre"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:text="上一页"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:background="@drawable/button"/>
+        <TextView
+            android:id="@+id/currentPage"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+
+            android:text="0/0"
+            android:gravity="center"/>
+        <Button
+            android:id="@+id/next"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:text="下一页"
+            android:gravity="center"
+            android:background="@drawable/button"
+
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+</LinearLayout>

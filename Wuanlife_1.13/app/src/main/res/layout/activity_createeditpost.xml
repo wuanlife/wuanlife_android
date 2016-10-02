@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+    <include layout="@layout/include_toolbar"/>
+    <EditText
+        android:id="@+id/createeditpost_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="标题"/>
+    <EditText
+        android:id="@+id/createeditpost_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="说点什么吧"/>
+    <HorizontalScrollView
+        android:id="@+id/horScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:visibility="gone"
+        >
+        <LinearLayout
+            android:id="@+id/image_linear"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/addImage"
+                android:layout_width="60dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_add_48pt_3x"
+                android:background="@color/no"
+                android:scaleType="fitXY" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+        <ImageButton
+            android:id="@+id/send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_send_18pt_2x"/>
+        <ImageButton
+            android:id="@+id/startselectpicture"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toLeftOf="@id/send"
+            android:layout_marginRight="50dp"
+            android:src="@drawable/ic_add_box_white_48dp"
+            android:background="@color/SlateGray"
+            android:scaleType="fitXY" />
+    </RelativeLayout>
+
+</LinearLayout>
