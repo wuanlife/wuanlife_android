@@ -1,6 +1,7 @@
 package com.wuanan.frostmaki.wuanlife_113.Utils;
 
 import com.qiniu.util.Auth;
+import com.wuanan.frostmaki.wuanlife_113.NewView.GroupPostClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,13 +13,20 @@ public class MyApplication {
     //服务器地址
     private static String ApiHost="dev.wuanlife.com:800";
 
-    public static String getUrl(){
+    public static String getApiHost(){
         return ApiHost;
     }
 
 
+/*
+是否登录
+ */
+private static boolean islogin=false;
+    public static boolean getisLogin(){ return islogin;}
 
-
+    public static void setisLogin(boolean is){
+        islogin=is;
+    }
 
 
     // /登陆的用户信息，通过它得到用户ID，展示我的星球内容
@@ -52,14 +60,14 @@ public class MyApplication {
 
 
     //全部星球-->星球帖子列表-->帖子的信息ArrayLists，通过它获得帖子的ID，进而开始帖子详情。
-    private static ArrayList<HashMap<String,String>> GroupPostsArraylists=null;
+    private static ArrayList<GroupPostClass> GroupPostsArraylists=null;
 
     //MyApplication.getGroupPostsInfo().get(position).get("postsID");
     //MyApplication.getGroupPostsInfo().get(position).get("groupID");
-    public static ArrayList<HashMap<String,String>> getGroupPostsInfo(){
+    public static ArrayList<GroupPostClass> getGroupPostsInfo(){
         return GroupPostsArraylists;
     }
-    public static void setGroupPostsInfo(ArrayList<HashMap<String,String>> info){
+    public static void setGroupPostsInfo(ArrayList<GroupPostClass> info){
         GroupPostsArraylists=info;
     }
 
@@ -73,14 +81,14 @@ public class MyApplication {
     //
     //
     //Home帖子的信息ArrayLists，通过它获得帖子的ID，进而开始帖子详情。
-    private static ArrayList<HashMap<String,String>> HomePostsArraylists=null;
+    private static ArrayList<Postlist> HomePostsArraylists=null;
 
     //MyApplication.getHomePostsInfo().get(position).get("postID");
     //MyApplication.getHomePostsInfo().get(position).get("groupID");
-    public static ArrayList<HashMap<String,String>> getHomePostsInfo(){
+    public static ArrayList<Postlist> getHomePostsInfo(){
         return HomePostsArraylists;
     }
-    public static void setHomePostsInfo(ArrayList<HashMap<String,String>> info){
+    public static void setHomePostsInfo(ArrayList<Postlist> info){
         HomePostsArraylists=info;
     }
 
@@ -90,14 +98,14 @@ public class MyApplication {
 
 
     //MyGroups帖子的信息ArrayLists，通过它获得帖子的ID，进而开始帖子详情。
-    private static ArrayList<HashMap<String,String>> MyGroupPostsArraylists=null;
+    private static ArrayList<Postlist> MyGroupPostsArraylists=null;
 
     //MyApplication.getMyGroupPostsInfo().get(position).get("postID");
     //MyApplication.getMyGroupPostsInfo().get(position).get("groupID");
-    public static ArrayList<HashMap<String,String>> getMyGroupPostsInfo(){
+    public static ArrayList<Postlist> getMyGroupPostsInfo(){
         return MyGroupPostsArraylists;
     }
-    public static void setMyGroupPostsInfo(ArrayList<HashMap<String,String>> info){
+    public static void setMyGroupPostsInfo(ArrayList<Postlist> info){
         MyGroupPostsArraylists=info;
     }
 

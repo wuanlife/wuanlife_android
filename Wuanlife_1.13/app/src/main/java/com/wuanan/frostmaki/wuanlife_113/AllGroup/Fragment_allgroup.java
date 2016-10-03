@@ -87,7 +87,7 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String ApiHost= MyApplication.getUrl();
+                String ApiHost= MyApplication.getApiHost();
                 String Pr_URL="http://"+ApiHost+"/?service=Group.Lists&page="+index;
                 //Log.e("PostsDetail.URL——————>",Pr_URL);
                 String JsonData= Http_Url.getUrlReponse(Pr_URL);
@@ -95,7 +95,6 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
                     all_planet_arrayList = AllGroupLists_JSON.getJSONParse(JsonData);
 
                     MyApplication.setGroupListInfo(all_planet_arrayList);
-
 
                     Message message = new Message();
                     message.what = 0;

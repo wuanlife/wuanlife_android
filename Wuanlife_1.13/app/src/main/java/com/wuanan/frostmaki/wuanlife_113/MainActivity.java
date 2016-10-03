@@ -1,13 +1,10 @@
 package com.wuanan.frostmaki.wuanlife_113;
 
 
-import android.app.FragmentManager;
-
-
-import android.content.Context;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Matrix;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,42 +13,74 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nineoldandroids.view.ViewHelper;
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.Fragment_allgroup;
 import com.wuanan.frostmaki.wuanlife_113.Home.Fragment_home;
-import com.wuanan.frostmaki.wuanlife_113.MyGroup.Fragment_mygroup;
+import com.wuanan.frostmaki.wuanlife_113.LoginRegisterCancel.BaseActivity;
+import com.wuanan.frostmaki.wuanlife_113.MyGroup.MygroupFragment;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
+import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
 
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private LinearLayout personcenter;
+    private LinearLayout noperson;
+    private RelativeLayout person;
 
     private ViewPager mViewPager;
     private FragmentPagerAdapter mfragmentPagerAdapter;
     private List<Fragment> mFragments;
 
-    private Button btn_mygroup;
-    private Button btn_home;
-    private Button btn_allgroup;
-    private ImageView underline;
+    private Button login;
+    private Button register;
+    private Button cancel;
+
+    private TextView l_name;
+    private TextView l_sex;
+    private TextView l_mail;
+    private TextView l_date;
 
     private TabLayout tab;
 
     /**
      * 下划线图片宽度
      */
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0 :
+                    MyApplication.setisLogin(false);
+                    MyApplication.setUserInfo(null);
+                    Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                    onStart();
+            break;
+                case 1:
+                    Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+
+
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +91,74 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initToolbar();
         initView();
 
-
+        initDrawerLayout();
         //Fragment baseFragment=new Fragment();
         //FragmentManager fm=getFragmentManager();
         //fm.beginTransaction().replace(R.id.main_content,baseFragment).commit();
+        tab.getTabAt(1).select();
+
+    }
+
+
+
+    private void initDrawerLayout() {
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                Gravity.RIGHT);
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                View mContent = drawerLayout.getChildAt(0);
+                View mMenu = drawerView;
+                float scale = 1 - slideOffset;
+                float rightScale = 0.8f + scale * 0.2f;
+
+                if (drawerView.getTag().equals("LEFT"))
+                {
+
+                    float leftScale = 1 - 0.3f * scale;
+
+                    ViewHelper.setScaleX(mMenu, leftScale);
+                    ViewHelper.setScaleY(mMenu, leftScale);
+                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
+                    ViewHelper.setTranslationX(mContent,
+                            mMenu.getMeasuredWidth() * (1 - scale));
+                    ViewHelper.setPivotX(mContent, 0);
+                    ViewHelper.setPivotY(mContent,
+                            mContent.getMeasuredHeight() / 2);
+                    mContent.invalidate();
+                    ViewHelper.setScaleX(mContent, rightScale);
+                    ViewHelper.setScaleY(mContent, rightScale);
+                } else
+                {
+                    ViewHelper.setTranslationX(mContent,
+                            -mMenu.getMeasuredWidth() * slideOffset);
+                    ViewHelper.setPivotX(mContent, mContent.getMeasuredWidth());
+                    ViewHelper.setPivotY(mContent,
+                            mContent.getMeasuredHeight() / 2);
+                    mContent.invalidate();
+                    ViewHelper.setScaleX(mContent, rightScale);
+                    ViewHelper.setScaleY(mContent, rightScale);
+                }
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                drawerLayout.setDrawerLockMode(
+                        DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
 
@@ -98,12 +191,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tab.addTab(tab.newTab().setText("Tab 3"));
 
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        personcenter = (LinearLayout) findViewById(R.id.main_personCenter);
+
 
         mViewPager = (ViewPager) findViewById(R.id.mViewpager);
         mFragments = new ArrayList<Fragment>();
-        Fragment fragment_mygroup = new Fragment_mygroup();
+        Fragment fragment_mygroup = new MygroupFragment();
         Fragment fragment_home = new Fragment_home();
         Fragment fragment_allgroup = new Fragment_allgroup();
 
@@ -168,10 +260,120 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        personcenter = (LinearLayout) findViewById(R.id.main_personCenter);
+        person= (RelativeLayout) findViewById(R.id.person);
+        noperson= (LinearLayout) findViewById(R.id.noperson);
+
+
+        if (MyApplication.getisLogin()==false){
+            person.setVisibility(View.GONE);
+            noperson.setVisibility(View.VISIBLE);
+        }else {
+            noperson.setVisibility(View.GONE);
+            person.setVisibility(View.VISIBLE);
+        }
+
+        login= (Button) findViewById(R.id.login);
+        register= (Button) findViewById(R.id.register);
+        cancel= (Button) findViewById(R.id.cancel);
+
+        login.setOnClickListener(this);
+        register.setOnClickListener(this);
+        cancel.setOnClickListener(this);
+
+        l_name= (TextView) findViewById(R.id.l_name);
+        l_sex= (TextView) findViewById(R.id.l_sex);
+        l_mail= (TextView) findViewById(R.id.l_mail);
+        l_date= (TextView) findViewById(R.id.l_date);
+
+        l_sex.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.login ://登陆
+                Intent intent=new Intent(MainActivity.this, BaseActivity.class);
+                intent.putExtra("code",1);
+                startActivity(intent);
+                break;
+            case R.id.register ://注册
+                Intent intent_2=new Intent(MainActivity.this, BaseActivity.class);
+                intent_2.putExtra("code",2);
+                startActivity(intent_2);
+                break;
+            case R.id.cancel ://注销
+                if (MyApplication.getisLogin()==true) {
+                    cancelMethod();
+                }
+                break;
+            case R.id.l_sex :
+                l_sex.setText("女");
+                break;
+        }
 
+    }
+
+    private void cancelMethod() {
+        String resultData=null;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String ApiHost = MyApplication.getApiHost();
+                String UStatus = "http://" + ApiHost + "/?service=Group.UStatus&user_id=" + MyApplication.getUserInfo().get(0).get("userID");
+                String resultData = Http_Url.getUrlReponse(UStatus);
+
+
+                try {
+                    JSONObject jsonObject = new JSONObject(resultData);
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    int code = data.getInt("code");
+                    String msg=null;
+                    if (code == 1) {
+                        MyApplication.setisLogin(false);
+                        MyApplication.setUserInfo(null);
+                        msg="注销成功";
+                        Message message=new Message();
+                        message.what=0;
+                        message.obj=msg;
+                        handler.sendMessage(message);
+                    }else {
+                        msg = data.getString("msg");
+
+                        Message message = new Message();
+                        message.what = 1;
+                        message.obj = msg;
+                        handler.sendMessage(message);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("zhuxiao", e + "");
+                }
+
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (MyApplication.getisLogin()==false){
+            person.setVisibility(View.GONE);
+            noperson.setVisibility(View.VISIBLE);
+        }else {
+            noperson.setVisibility(View.GONE);
+            person.setVisibility(View.VISIBLE);
+
+            l_name.setText(MyApplication.getUserInfo().get(0).get("nickname"));
+            l_sex.setText("男");
+            l_mail.setText(MyApplication.getUserInfo().get(0).get("Email"));
+
+            SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy年MM月dd日");
+            Date    curDate    =   new Date(System.currentTimeMillis());//获取当前时间
+            String    str    =    formatter.format(curDate);
+
+            l_date.setText(str);
+        }
     }
 }

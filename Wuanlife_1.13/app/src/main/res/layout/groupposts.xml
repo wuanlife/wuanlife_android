@@ -11,6 +11,17 @@
         android:layout_weight="1"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:dividerHeight="8dp"></ListView>
+        android:dividerHeight="8dp"
+        android:visibility="visible"></ListView>
+    <TextView
+        android:id="@+id/nothing"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="暂时没有帖子"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:textColor="@color/textColor"
+        android:visibility="gone"/>
     <include layout="@layout/include_buttom"/>
 </LinearLayout>

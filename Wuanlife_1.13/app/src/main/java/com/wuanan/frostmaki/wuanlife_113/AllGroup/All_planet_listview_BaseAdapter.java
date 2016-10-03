@@ -2,6 +2,7 @@ package com.wuanan.frostmaki.wuanlife_113.AllGroup;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,9 +68,10 @@ public class All_planet_listview_BaseAdapter extends BaseAdapter{
         viewHolder.all_planet_listview_text.setText(arraylist.get(position).get("text"));
         currentPage.setText(arraylist.get(position).get("currentPage")+" / "+arraylist.get(position).get("pageCount"));
 
-        //viewHolder.all_planet_listview_image.setImageResource(R.drawable.ic_launcher);
-        String urlTag=arraylist.get(position).get("image");
+        //viewHolder.all_planet_listview_image.setImageResource(R.drawable.background);
+          String urlTag=arraylist.get(position).get("image");
         if (urlTag!=null) {
+            //Log.e("all froup",urlTag);
             //viewHolder.all_planet_listview_image.setVisibility(View.VISIBLE);
             viewHolder.all_planet_listview_image.setTag(urlTag);
             new ImageLoader().showImageByThread(viewHolder.all_planet_listview_image, urlTag);

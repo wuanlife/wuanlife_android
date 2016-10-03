@@ -1,7 +1,6 @@
-package com.wuanan.frostmaki.wuanlife_113.Utils;
+package com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,23 +11,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.wuanan.frostmaki.wuanlife_113.NewView.GroupPostClass;
 import com.wuanan.frostmaki.wuanlife_113.R;
+import com.wuanan.frostmaki.wuanlife_113.Utils.ImageLoader;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Postlist;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Frostmaki on 2016/7/16.
  */
-public class Posts_listview_BaseAdapter extends BaseAdapter {
+public class GroupPosts_listview_BaseAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Postlist> arraylist;
+    private ArrayList<GroupPostClass> arraylist;
     private Button currentPage;
 
 
-    public Posts_listview_BaseAdapter(Context context,
-                                      ArrayList<Postlist> arrayList,
-                                      Button currentPage){
+    public GroupPosts_listview_BaseAdapter(Context context,
+                                           ArrayList<GroupPostClass> arrayList,
+                                           Button currentPage){
         this.mContext=context;
         this.arraylist=arrayList;
         this.currentPage=currentPage;

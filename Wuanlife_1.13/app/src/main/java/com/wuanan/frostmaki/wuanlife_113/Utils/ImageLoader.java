@@ -18,34 +18,35 @@ public class ImageLoader
 {
 	private ImageView mImageView;
 	private String murl;
+	private Bitmap mbitmap;
 	private	Handler handler=new Handler(){
 
 		@Override
 		public void handleMessage(Message msg)
 		{
 			// TODO: Implement this method
-			super.handleMessage(msg);
+
 			if(mImageView.getTag().equals(murl)){
-			mImageView.setImageBitmap((Bitmap)msg.obj);
+				mImageView.setImageBitmap(mbitmap);
+
 			}
 		}
 
-	
-	
-};
-	public void showImageByThread(ImageView imageview,final String url){
-		mImageView=imageview;
-		murl=url;
-		new Thread(){
-		public void run(){
-			super.run();
-	 Bitmap bitmap=
-			 getBitmapFromUrl(url);
-	 Message message=Message.obtain();
-	 message.obj=bitmap;
-	 handler.sendMessage(message);
-		}	
-	}.start();
+	};
+	public void showImageByThread(ImageView imageview, String url) {
+		mImageView = imageview;
+		murl = url;
+		mbitmap = null;
+		new Thread() {
+			public void run() {
+				super.run();
+				Bitmap bitmap = getBitmapFromUrl(murl);
+				mbitmap=bitmap;
+				Message message = Message.obtain();
+				message.obj = bitmap;
+				handler.sendMessage(message);
+			}
+		}.start();
 	}
 	public Bitmap getBitmapFromUrl(String urlString) {
 		Bitmap bitmap;
@@ -53,7 +54,7 @@ public class ImageLoader
 		try
 		{
 			String str = URLEncoder.encode(urlString, "UTF-8");
-			String strURL = str.replaceAll("%3A", ":").replaceAll("%2F", "/");
+			String strURL = str.replaceAll("%3A", ":").replaceAll("%2F", "/").replace("%3F","?");
 			//Log.e("ImageLaoder  strURL  ", strURL);
 			URL url=new URL(strURL);
 

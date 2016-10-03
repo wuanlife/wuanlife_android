@@ -1,18 +1,15 @@
 package com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,23 +17,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
-import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyGroupPosts_JSON;
-import com.wuanan.frostmaki.wuanlife_113.Posts.Activity_PostsDetail;
+import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyGroupJson;
+import com.wuanan.frostmaki.wuanlife_113.NewView.GroupPostClass;
+import com.wuanan.frostmaki.wuanlife_113.Posts.PostsDetailActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Postlist;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Posts_listview_BaseAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static com.wuanan.frostmaki.wuanlife_113.R.id.cancel;
-import static com.wuanan.frostmaki.wuanlife_113.R.id.groupName;
-import static com.wuanan.frostmaki.wuanlife_113.R.id.next;
 
 /**
  * Created by Frostmaki on 2016/9/30.
@@ -45,13 +39,14 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     private Toolbar toolbar;
     private TextView toolbar_title;
     private ListView listView;
+    private TextView nothing;
     private Button btn_pre;
     private Button btn_next;
     private Button btn_currentpage;
 
 
-    private ArrayList<HashMap<String,String>> arraylist;
-    private Posts_listview_BaseAdapter posts_listview_baseAdapter;
+    private ArrayList<GroupPostClass> arraylist;
+    private GroupPosts_listview_BaseAdapter posts_listview_baseAdapter;
     private int index=1;
     private int pageCount=1;
     private String group_id=null;
@@ -64,20 +59,24 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    ArrayList<HashMap<String,String>> arrayList=
-                            (ArrayList<HashMap<String,String>>)msg.obj;
-                    posts_listview_baseAdapter = new Posts_listview_BaseAdapter(
+                    nothing.setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+                    ArrayList<GroupPostClass> arrayList=
+                            (ArrayList<GroupPostClass>) msg.obj;
+                    posts_listview_baseAdapter = new GroupPosts_listview_BaseAdapter(
                             GroupPostsActivity.this,
                             arrayList,
                             btn_currentpage);
-                    pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
+                    pageCount= arrayList.get(0).getPageCount();
                     listView.setAdapter(posts_listview_baseAdapter);
 
 
                     break;
                 case 1 :  //处理消息
                     String message= (String) msg.obj;
-                    Toast.makeText(GroupPostsActivity.this,message,Toast.LENGTH_SHORT).show();
+                listView.setVisibility(View.GONE);
+                    nothing.setVisibility(View.VISIBLE);
+                    //Toast.makeText(GroupPostsActivity.this,message,Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -93,6 +92,12 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
       //  setOverflowShowingAlways();
     }
 
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getRes();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -162,7 +167,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void run() {
                 String msg=null;
-                String ApiHost = MyApplication.getUrl();
+                String ApiHost = MyApplication.getApiHost();
                 String Pr_URL="http://"+ApiHost+"/?service=Group.Join"
                         +"&group_id="+group_id+"&user_id="+userID;
                 String JsonData = Http_Url.getUrlReponse(Pr_URL);
@@ -194,11 +199,13 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
         btn_pre= (Button) findViewById(R.id.pre);
         btn_next= (Button) findViewById(R.id.next);
 
-        arraylist=new ArrayList<HashMap<String, String>>();
+        nothing= (TextView) findViewById(R.id.nothing);
+
+        arraylist= new ArrayList<GroupPostClass>();
 
         group_id=getIntent().getStringExtra("group_id");
         group_name=getIntent().getStringExtra("group_name");
-        if (MyApplication.getUserInfo()!=null) {
+        if (MyApplication.getisLogin()==true) {
             userID = MyApplication.getUserInfo().get(0).get("userID");
         }
 
@@ -244,17 +251,17 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void run() {
 
-                String ApiHost = MyApplication.getUrl();
+                String ApiHost = MyApplication.getApiHost();
                 String Pr_URL="http://"+ApiHost+"/?service=Post.GetGroupPost"
                         +"&group_id="+group_id+"&pn="+index;
                 //Log.e("GroupPosts.url------->",Pr_URL);
                 String JsonData = Http_Url.getUrlReponse(Pr_URL);
-                arraylist = GroupPosts_JSON.getJSONParse(JsonData);
+                arraylist = GroupJson.getJSONParse(JsonData);
                 MyApplication.setGroupPostsInfo(arraylist);
                 if (arraylist != null) {
                     //星球帖子信息
 
-                    MyApplication.setMyGroupPostsInfo(arraylist);
+                    MyApplication.setGroupPostsInfo(arraylist);
                     Message message = new Message();
                     message.what = 0;
                     message.obj = arraylist;
@@ -271,10 +278,10 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String data1 =null;
+        int data1 =0;
 
-        data1= MyApplication.getGroupPostsInfo().get(position).get("postID");
-        Intent intent=new Intent(GroupPostsActivity.this, Activity_PostsDetail.class);
+        data1= MyApplication.getGroupPostsInfo().get(position).getPostID();
+        Intent intent=new Intent(GroupPostsActivity.this, PostsDetailActivity.class);
         intent.putExtra("postID", data1);
         intent.putExtra("groupName",group_name);
 

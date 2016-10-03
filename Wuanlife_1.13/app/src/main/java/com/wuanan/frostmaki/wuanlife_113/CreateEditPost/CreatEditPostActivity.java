@@ -10,11 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.ExpandedMenuView;
-import android.support.v7.widget.ForwardingListener;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +27,7 @@ import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
-import com.wuanan.frostmaki.wuanlife_113.NewView.Postcreating;
-import com.wuanan.frostmaki.wuanlife_113.Posts.Activity_PostsDetail;
+import com.wuanan.frostmaki.wuanlife_113.Posts.PostsDetailActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
@@ -45,9 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -101,11 +93,12 @@ public class CreatEditPostActivity extends AppCompatActivity implements View.OnC
                     break;
                 case 1 :
                     Toast.makeText(CreatEditPostActivity.this,"发帖成功",Toast.LENGTH_SHORT).show();
-                    Intent intent=new Intent(CreatEditPostActivity.this, Activity_PostsDetail.class);
-                    intent.putExtra("postID", msg.obj.toString());
-                    intent.putExtra("groupName",groupName);
+                  //  Intent intent=new Intent(CreatEditPostActivity.this, PostsDetailActivity.class);
+                  //  intent.putExtra("postID", msg.obj.toString());
+                  //  intent.putExtra("groupName",groupName);
 
-                    startActivity(intent);
+                   // startActivity(intent);
+                    finish();
                 break;
             }
         }
@@ -201,7 +194,7 @@ public class CreatEditPostActivity extends AppCompatActivity implements View.OnC
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String ApiHost= MyApplication.getUrl();
+                String ApiHost= MyApplication.getApiHost();
                 String Pre_URL="http://"+ApiHost+"/?service=Group.Posts"
                         +"&user_id="+user_id
                         +"&group_base_id="+group_id
@@ -234,7 +227,7 @@ public class CreatEditPostActivity extends AppCompatActivity implements View.OnC
                     e.printStackTrace();
                 }
             }
-        });
+        }).start();
     }
 
     /*

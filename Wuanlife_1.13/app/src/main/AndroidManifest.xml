@@ -18,9 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Posts.Activity_PostsDetail"></activity>
+        <activity android:name=".Posts.PostsDetailActivity"></activity>
         <activity android:name=".AllGroup.GroupListPosts.GroupPostsActivity"></activity>
         <activity android:name=".CreateEditPost.CreatEditPostActivity"></activity>
+        <activity android:name=".LoginRegisterCancel.BaseActivity"></activity>
+
     </application>
 
 </manifest>
