@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/postBase_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="35sp"
-
         android:layout_gravity="center_vertical"
         android:background="@color/white"
         android:textColor="@color/Black"
@@ -21,18 +19,15 @@
         android:layout_height="20dp"
         android:orientation="horizontal"
         android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        >
+        android:layout_marginTop="5dp">
         <TextView
             android:id="@+id/postBase_nickname"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
             android:gravity="center_vertical"
             android:textColor="@color/textColor"
             android:background="@color/white"
-            android:textSize="15sp"
-            />
+            android:textSize="15sp" />
         <TextView
             android:id="@+id/postBase_NG"
             android:layout_width="wrap_content"
@@ -46,7 +41,6 @@
             android:id="@+id/postBase_groupName"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-
             android:textSize="15sp"
             android:gravity="center"
             android:textColor="@color/textColor"
@@ -59,8 +53,7 @@
             android:textSize="15sp"
             android:gravity="right|center_vertical"
             android:textColor="@color/textColor"
-            android:background="@color/white"
-            />
+            android:background="@color/white" />
     </LinearLayout>
     <TextView
         android:id="@+id/postBase_text"
@@ -76,7 +69,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-            />
     </LinearLayout>
     <!--<LinearLayout
         android:id="@+id/postBase_linera02"

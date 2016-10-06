@@ -1,6 +1,7 @@
 package com.wuanan.frostmaki.wuanlife_113.Utils;
 
 import com.qiniu.util.Auth;
+import com.wuanan.frostmaki.wuanlife_113.MyGroup.JoinCreateGroup;
 import com.wuanan.frostmaki.wuanlife_113.NewView.GroupPostClass;
 
 import java.util.ArrayList;
@@ -43,10 +44,35 @@ private static boolean islogin=false;
 
 
 
+    //已加入星球
+    private static ArrayList<JoinCreateGroup> joinGroupArrayList=null;
+
+    public static void setJoinGroupArrayList(ArrayList<JoinCreateGroup> s) {
+        joinGroupArrayList = s;
+    }
+
+    public static ArrayList<JoinCreateGroup> getJoinGroupArrayList() {
+        return joinGroupArrayList;
+    }
+
+    //已创建星球
+
+    private static ArrayList<JoinCreateGroup> createGroupArrayList=null;
+
+    public static void setCreateGroupArrayList(ArrayList<JoinCreateGroup> s) {
+        createGroupArrayList = s;
+    }
+
+    public static ArrayList<JoinCreateGroup> getCreateGroupArrayList() {
+        return createGroupArrayList;
+    }
 
 
 
-//全部星球ArrayLists，通过它获得星球ID，得到该星球中发表的帖子
+
+
+
+    //全部星球ArrayLists，通过它获得星球ID，得到该星球中发表的帖子
     private static ArrayList<HashMap<String,String>> GroupListArraylists=null;
 
     //MyApplication.getGroupInfo().get(position).get("id");得到星球ID

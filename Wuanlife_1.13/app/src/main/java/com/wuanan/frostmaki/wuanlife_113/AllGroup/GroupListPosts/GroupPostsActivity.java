@@ -49,7 +49,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     private GroupPosts_listview_BaseAdapter posts_listview_baseAdapter;
     private int index=1;
     private int pageCount=1;
-    private String group_id=null;
+    private int group_id=0;
     private String userID=null;
     private String group_name=null;
 
@@ -141,6 +141,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
                             跳转到发帖Activity
                              */
                             Intent intent=new Intent(GroupPostsActivity.this, CreatEditPostActivity.class);
+                             intent.putExtra("code",2);
                             intent.putExtra("groupName",group_name);
                             intent.putExtra("group_id",group_id);
                             intent.putExtra("user_id",userID);
@@ -162,7 +163,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     /*
                加入星球
                              */
-    private void joinGroup(final String group_id, final String userID) {
+    private void joinGroup(final int group_id, final String userID) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -203,7 +204,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
 
         arraylist= new ArrayList<GroupPostClass>();
 
-        group_id=getIntent().getStringExtra("group_id");
+        group_id=getIntent().getIntExtra("group_id",0);
         group_name=getIntent().getStringExtra("group_name");
         if (MyApplication.getisLogin()==true) {
             userID = MyApplication.getUserInfo().get(0).get("userID");

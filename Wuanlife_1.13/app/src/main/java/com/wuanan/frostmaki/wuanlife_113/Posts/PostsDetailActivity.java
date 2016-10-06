@@ -1,6 +1,7 @@
 package com.wuanan.frostmaki.wuanlife_113.Posts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyGroupJson;
 import com.wuanan.frostmaki.wuanlife_113.NewView.PostDetailsClass;
 import com.wuanan.frostmaki.wuanlife_113.R;
@@ -164,6 +166,12 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                 case 6:
                     mainText.append((CharSequence) msg.obj);
                     break;
+                case 7 :
+                    Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    if (msg.getData().getInt("code")==1) {
+                        finish();
+                    }
+                    break;
             }
         }
     };
@@ -229,6 +237,15 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                         跳转到发帖页面
                         1.传送————>标题  内容  用户ID  帖子ID
                          */
+                        Intent intent=new Intent(PostsDetailActivity.this, CreatEditPostActivity.class);
+                        intent.putExtra("code",1);//d代表是编辑
+                        intent.putExtra("groupName",postDetail_Base.getGroupName());
+
+                        intent.putExtra("post_id",postDetail_Base.getPostID());
+                        intent.putExtra("user_id",postDetail_Base.getId());
+                        intent.putExtra("title",postDetail_Base.getTitle());
+                        intent.putExtra("text",postDetail_Base.getText());
+                        startActivity(intent);
                         break;
                     case R.id.Item_stick :
                     if (isLogin==true){
@@ -275,11 +292,16 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                     JSONObject jsonObject=new JSONObject(resultData);
                     int code=jsonObject.getJSONObject("data").getInt("code");
                     Message message = new Message();
-                    message.what = TOASTMESSAGE;
+                    message.what = 7;
+                    message.obj=jsonObject.getJSONObject("data").getString("re");
                     if (code==1){
-                        message.obj="操作成功";
+                        Bundle bundle=new Bundle();
+                        bundle.putInt("code",1);
+                        message.setData(bundle);
                     }else {
-                        message.obj=jsonObject.getJSONObject("data").getInt("re");
+                        Bundle bundle=new Bundle();
+                        bundle.putInt("code",0);
+                        message.setData(bundle);
                     }
                     handler.sendMessage(message);
                 }catch (Exception e){
@@ -306,14 +328,14 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                     int code=jsonObject.getJSONObject("data").getInt("code");
                     Message message = new Message();
                     message.what = 5;
-                    message.obj=jsonObject.getJSONObject("data").getInt("re");
+                    message.obj=jsonObject.getJSONObject("data").getString("re");
                     if (code==1){
                         Bundle bundle=new Bundle();
                         bundle.putInt("code",1);
                         message.setData(bundle);
                     }else {
                         Bundle bundle=new Bundle();
-                        bundle.putInt("code",1);
+                        bundle.putInt("code",0);
                         message.setData(bundle);
                     }
                     handler.sendMessage(message);

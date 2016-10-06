@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="暂时没有帖子"
+        android:text="星球空空，赶快注水！"
         android:textSize="30sp"
         android:gravity="center"
         android:textColor="@color/textColor"

@@ -109,7 +109,7 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String group_id=MyApplication.getGroupInfo().get(position).get("id");
+        int group_id=Integer.parseInt(MyApplication.getGroupInfo().get(position).get("id"));
         String group_name=MyApplication.getGroupInfo().get(position).get("title");
         Intent intent=new Intent(getActivity(), GroupPostsActivity.class);
         intent.putExtra("group_id",group_id);

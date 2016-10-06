@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/myGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+     <!-- <ScrollView
+            android:id="@+id/scrollView_mygroup"
+
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical">
+            <!--    <include layout="@layout/fragment_mygroup_frame_content"/>
+                <RelativeLayout
+                    android:id="@+id/frame_content_join"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"></RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/frame_content_create"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"></RelativeLayout>-->
+
+            <ListView
+                android:id="@+id/listView_mygroup"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:dividerHeight="8dp"
+                ></ListView>
+            <include layout="@layout/include_buttom"/>
+        </LinearLayout>
+      <!-- </ScrollView>-->
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nomyGroup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:visibility="visible"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:text="赶快注册"
+            android:textColor="@color/textColor"
+            android:gravity="center_horizontal|bottom"
+            android:layout_marginBottom="10dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:text="加入你感兴趣的星球吧"
+            android:textColor="@color/textColor"
+            android:gravity="center_horizontal|top"
+            android:layout_marginTop="10dp"
+            />
+    </LinearLayout>
+</LinearLayout>
