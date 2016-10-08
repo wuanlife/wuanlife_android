@@ -553,9 +553,6 @@ public static void createPost(){
                 MyApplication.getCreateGroupArrayList()==null){
             Toast.makeText(mContext,"您的星球什么都没有，先干些其他事吧",Toast.LENGTH_SHORT).show();
         }else {
-Log.e("getMyGroupPostsInfo()",MyApplication.getMyGroupPostsInfo()+"");
-            Log.e("getJoinGroupArrayList()",MyApplication.getJoinGroupArrayList()+"");
-            Log.e("getCreaGroupArrayList()",MyApplication.getCreateGroupArrayList()+"");
             createpostMethod();
             isVisibilty = true;
         }

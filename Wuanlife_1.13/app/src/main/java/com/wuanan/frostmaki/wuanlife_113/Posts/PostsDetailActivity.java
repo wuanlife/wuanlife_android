@@ -44,6 +44,7 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -571,7 +572,7 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
             Matcher m = p.matcher(source);
             Boolean real = source.matches(pattern);
 
-            System.out.println(m.groupCount());
+
 
             int start = 0;
             int end = 0;
@@ -649,7 +650,11 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
         public void run() {
             //String s="http://b.hiphotos.baidu.com/image/h%3D360/sign=8918c5efbe3eb1355bc7b1bd961ea8cb/7a899e510fb30f244bb50504ca95d143ad4b038d.jpg";
             try {
-                URL url = new URL(str);
+
+                String Restr = URLEncoder.encode(str, "UTF-8");
+                String strURL = Restr.replaceAll("%3A", ":").replaceAll("%2F", "/").replace("%3F","?").replace("%22","");
+                Log.e("图片---->",strURL);
+                URL url = new URL(strURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

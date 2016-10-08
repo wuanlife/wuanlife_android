@@ -413,7 +413,7 @@ public class CreatePostFragment extends Fragment implements View.OnClickListener
                                 try {
                                     String responseKey = response.getString("key");
                                     Log.e("Url", "http://"+MyApplication.getYuMing()+"/" + responseKey);
-                                    imageNetpath="http://"+MyApplication.getYuMing()+"/"+ responseKey;
+                                    imageNetpath="<img src="+"http://"+MyApplication.getYuMing()+"/"+ responseKey+">";
 
                                     Message message=new Message();
                                     message.what=0;
