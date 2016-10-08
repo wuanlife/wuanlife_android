@@ -80,13 +80,13 @@ public class MyGroupJson {
                 }
 
                 return arraylist;
-            }else if (posts.length()==0){
+            }else {
                 return null;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("onPostExecute: ", e + "");
+            Log.e("myGroupJson: ", e + "");
         }
         return null;
     }

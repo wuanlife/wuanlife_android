@@ -3,92 +3,109 @@ package com.wuanan.frostmaki.wuanlife_113.MyGroup;
 
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
+
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ScrollingView;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts.GroupPostsActivity;
+import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
+import com.wuanan.frostmaki.wuanlife_113.Home.HomePosts_listview_Adapter;
+import com.wuanan.frostmaki.wuanlife_113.LoginRegisterCancel.BaseActivity;
+import com.wuanan.frostmaki.wuanlife_113.MainActivity;
+import com.wuanan.frostmaki.wuanlife_113.MyGroup.CreatePost.ViewPagerAdapter;
 import com.wuanan.frostmaki.wuanlife_113.Posts.PostsDetailActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
+import com.wuanan.frostmaki.wuanlife_113.Utils.ImageLoader;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
+import com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Postlist;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Posts_listview_BaseAdapter;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Xcircleindicator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Frostmaki on 2016/9/27.
  */
 public class MygroupFragment extends Fragment implements View.OnClickListener,AdapterView.OnItemClickListener{
-    private View view;
+    private static View view;
     private View headView;
     private View headViewCreate;
 
+    private MySwipeRefreshLayout mRefreshLayout;
+    private ImageButton arrow_update;
+
     private ListView mlistView;
     private ArrayList<Postlist> arraylist;
-    private Posts_listview_BaseAdapter posts_listview_baseAdapter;
-    private Context mContext;
-    private Button currentPage;
-    private Button pre;
-    private Button next;
+    private HomePosts_listview_Adapter posts_listview_baseAdapter;
+    private static Context mContext;
+    private static Activity activity;
+
+    private ImageButton more;
     private ScrollView scrollView;
     private int index=1;
     private int pageCount=1;
+    private static Boolean isVisibilty=false;
 
-    private LinearLayout myGroup;
+    private static ViewPager mPager;
+    private static Xcircleindicator mXcircleindicator;
+
+
+    private RelativeLayout myGroup;
     private LinearLayout nomyGroup;
     private String user_id=null;
 
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            Log.e("message.what",msg.what+"");
             switch (msg.what){
                 case 0:
+
                     ArrayList<Postlist> arrayList= (ArrayList<Postlist>) msg.obj;
                     //Log.e("postlist",arrayList.toString());
-                    posts_listview_baseAdapter = new Posts_listview_BaseAdapter(
+                    posts_listview_baseAdapter = new HomePosts_listview_Adapter(
                             mContext,
-                            arrayList,
-                            currentPage);
+                            arrayList);
                     pageCount= arrayList.get(0).getPageCount();
                     mlistView.setAdapter(posts_listview_baseAdapter);
                     setListViewHeightBasedOnChildren(mlistView);
                     break;
                 case 1:
-            /*        android.app.Fragment nothingFragment=new Nothing_Fragment();
-                    Bundle args=new Bundle();
-                    args.putString("Name","我的星球");
-                    nothingFragment.setArguments(args);
-                    FragmentManager no_fm=getFragmentManager();
-                    no_fm.beginTransaction().replace(R.id.content_frame,nothingFragment).commit();*/
+                    myGroup.setVisibility(View.GONE);
+                    nomyGroup.setVisibility(View.VISIBLE);
                     break;
                 case 2:
                     join_linearLayout.setVisibility(View.GONE);
@@ -110,20 +127,19 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
                     break;
                 case 5 :
 
-                    if (arraylist.size()>0){
+                    if (createlist.size()>0){
                         create_button_1.setVisibility(View.VISIBLE);
                         create_button_1.setText(createlist.get(0).getName());
                         if (createlist.size()>1){
                             create_button_2.setVisibility(View.VISIBLE);
                             create_button_2.setText(createlist.get(1).getName());
-
                         }
                     }
                     break;
             }
         }
     };
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_mygroup_content,container,false);
@@ -140,6 +156,7 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
             initcreateView();
             initcreateData();
         }else {
+            Log.e("false","false         ");
             myGroup.setVisibility(View.GONE);
             nomyGroup.setVisibility(View.VISIBLE);
         }
@@ -148,14 +165,16 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
     }
 
     private void initView() {
+        activity=getActivity();
         mContext=getActivity().getApplicationContext();
+
         mlistView= (ListView) view.findViewById(R.id.listView_mygroup);
         arraylist= new ArrayList<>();
-        pre = (Button) view.findViewById(R.id.pre);
-        next = (Button) view.findViewById(R.id.next);
-        currentPage = (Button) view.findViewById(R.id.currentPage);
+        //pre = (Button) view.findViewById(R.id.pre);
+        //next = (Button) view.findViewById(R.id.next);
+        //currentPage = (Button) view.findViewById(R.id.currentPage);
 
-        myGroup= (LinearLayout) view.findViewById(R.id.myGroup);
+        myGroup= (RelativeLayout) view.findViewById(R.id.myGroup);
         nomyGroup= (LinearLayout) view.findViewById(R.id.nomyGroup);
 
         //scrollView= (ScrollView) view.findViewById(R.id.scrollView_mygroup);
@@ -166,49 +185,94 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
         headViewCreate=LayoutInflater.from(mContext).inflate(R.layout.fragment_mygroup_frame_content_create,null);
         mlistView.addHeaderView(headViewCreate);
 
-     /*   JoinFragment joinFragment=new JoinFragment();
-        FragmentManager fm_join=getFragmentManager();
-        fm_join.beginTransaction().replace(R.id.frame_content_join,joinFragment).commit();
+        more= (ImageButton) view.findViewById(R.id.more);
 
-        CreateFragment createFragment=new CreateFragment();
-        FragmentManager fm_create=getFragmentManager();
-        fm_create.beginTransaction().replace(R.id.frame_content_create,createFragment).commit();
+        arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
+        arrow_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.setTabVisibilty();
+            }
+        });
 
-*/
-        pre.setOnClickListener(this);
-        next.setOnClickListener(this);
+        mRefreshLayout= (MySwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        //mRefreshLayout.setEnabled(false);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                longTimeOperation();
+            }
+        });
+        mRefreshLayout.setOnLoadListener(new MySwipeRefreshLayout.OnLoadListener() {
+            @Override
+            public void onLoad() {
+                loadMore();
+
+            }
+        });
+
+        //pre.setOnClickListener(this);
+        //next.setOnClickListener(this);
+        more.setOnClickListener(this);
         mlistView.setOnItemClickListener(this);
         mlistView.setFocusable(false);
         mlistView.setFocusableInTouchMode(false);
         mlistView.requestFocus();
+
+        relay= (RelativeLayout) view.findViewById(R.id.myGroup_createpost);
+    }
+
+
+
+    private void loadMore() {
+        if (index<pageCount) {
+            mRefreshLayout.setRefreshing(true);
+
+            ++index;
+            getRes();
+            posts_listview_baseAdapter.notifyDataSetChanged();
+
+            mRefreshLayout.setRefreshing(false);
+        }else {
+            Toast.makeText(mContext,"已经是最后一页",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void longTimeOperation() {
+        if (index > 1) {
+            mRefreshLayout.setRefreshing(true);
+            --index;
+            getRes();
+            posts_listview_baseAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        } else {
+            mRefreshLayout.setRefreshing(true);
+
+            getRes();
+            posts_listview_baseAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.pre:
-                if (index>1){
-                    --index;
-                    getRes();
-                    posts_listview_baseAdapter.notifyDataSetChanged();
-                }else {
-                    Log.e("pre","cuowu");
-                }
-                break;
-            case R.id.next:
-
-                if (index<pageCount) {
-                    ++index;
-                    getRes();
-                    posts_listview_baseAdapter.notifyDataSetChanged();
-
-                }else {
-                    Log.e("next","cuowu");
-                }
-                break;
 
             case R.id.more :
+                Intent intent=new Intent(getActivity().getApplicationContext(), BaseActivity.class);
+                intent.putExtra("code",3);
+                startActivity(intent);
+                break;
+            case R.id.more_create :
+                Intent intent_create=new Intent(getActivity().getApplicationContext(), BaseActivity.class);
+                intent_create.putExtra("code",3);
+                startActivity(intent_create);
                 break;
             case R.id.group_1 :
                 int id=joinlist.get(0).getId();
@@ -251,6 +315,7 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
                             + "&pn=" + index;
                     String JsonData = Http_Url.getUrlReponse(Pr_URL);
                     arraylist = MyGroupJson.getJSONParse(JsonData);
+
                     if (arraylist!=null) {
                         //wo的星球帖子信息
 
@@ -259,11 +324,11 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
                         message.what = 0;
                         message.obj = arraylist;
                         handler.sendMessage(message);
+                    } else {
+                        Message message = new Message();
+                        message.what = 1;
+                        handler.sendMessage(message);
                     }
-                }else {
-                    Message message=new Message();
-                    message.what=1;
-                    handler.sendMessage(message);
                 }
 
             }
@@ -326,6 +391,7 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
         join_textView.setText("已加入的星球");
         join_button_1.setVisibility(View.GONE);
         join_button_2.setVisibility(View.GONE);
+        join_imageButton.setOnClickListener(this);
         join_button_1.setOnClickListener(this);
         join_button_2.setOnClickListener(this);
 
@@ -343,29 +409,32 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
                     String Pr_URL = "http://" + ApiHost
                             + "/?service=Group.GetJoined&user_id=" + user_id;
                     String resultdata = Http_Url.getUrlReponse(Pr_URL);
-                    joinlist = new ArrayList<JoinCreateGroup>();
+
                     try {
                         JSONObject jsonobject = new JSONObject(resultdata);
                         JSONObject data = jsonobject.getJSONObject("data");
                         JSONArray groups = data.getJSONArray("groups");
-                        for (int i = 0; i < groups.length(); i++) {
-                            JoinCreateGroup mlist = new JoinCreateGroup();
+                        if (groups.length()>0) {
+                            joinlist = new ArrayList<JoinCreateGroup>();
+                            for (int i = 0; i < groups.length(); i++) {
+                                JoinCreateGroup mlist = new JoinCreateGroup();
 
-                            mlist.setNum(data.getInt("num"));
-                            mlist.setPageCount(data.getInt("pageCount"));
-                            mlist.setCurrentPage(data.getInt("currentPage"));
-                            mlist.setUser_name(data.getString("user_name"));
+                                mlist.setNum(data.getInt("num"));
+                                mlist.setPageCount(data.getInt("pageCount"));
+                                mlist.setCurrentPage(data.getInt("currentPage"));
+                                mlist.setUser_name(data.getString("user_name"));
 
-                            mlist.setName(groups.getJSONObject(i).getString("name"));
-                            mlist.setId(groups.getJSONObject(i).getInt("id"));//星球ID
-                            mlist.setG_image(groups.getJSONObject(i).getString("g_image"));
-                            mlist.setG_introduction(groups.getJSONObject(i).getString("g_introduction"));
+                                mlist.setName(groups.getJSONObject(i).getString("name"));
+                                mlist.setId(groups.getJSONObject(i).getInt("id"));//星球ID
+                                mlist.setG_image(groups.getJSONObject(i).getString("g_image"));
+                                mlist.setG_introduction(groups.getJSONObject(i).getString("g_introduction"));
 
-                            joinlist.add(mlist);
+                                joinlist.add(mlist);
+                            }
                         }
                         MyApplication.setJoinGroupArrayList(joinlist);
                         Message message=new Message();
-                        if (arraylist==null){
+                        if (joinlist==null){
                             message.what=2;
                         }else {
                             message.what=3;
@@ -406,7 +475,7 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
 
     private void initcreateView() {
         create_textView= (TextView) headViewCreate.findViewById(R.id.name);
-        create_imageButton= (ImageButton) headViewCreate.findViewById(R.id.more);
+        create_imageButton= (ImageButton) headViewCreate.findViewById(R.id.more_create);
         create_button_1= (Button) headViewCreate.findViewById(R.id.create_group_1);
         create_button_2= (Button) headViewCreate.findViewById(R.id.create_group_2);
         create_linearLayout= (LinearLayout) headViewCreate.findViewById(R.id.content_fragment);
@@ -414,6 +483,7 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
         create_textView.setText("已创建的星球");
         create_button_1.setVisibility(View.GONE);
         create_button_2.setVisibility(View.GONE);
+        create_imageButton.setOnClickListener(this);
         create_button_1.setOnClickListener(this);
         create_button_2.setOnClickListener(this);
 
@@ -431,34 +501,36 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
                     String Pr_URL = "http://" + ApiHost
                             + "/?service=Group.GetCreate&user_id=" + user_id;
                     String resultdata = Http_Url.getUrlReponse(Pr_URL);
-                    createlist = new ArrayList<JoinCreateGroup>();
+
                     try {
                         JSONObject jsonobject = new JSONObject(resultdata);
                         JSONObject data = jsonobject.getJSONObject("data");
                         JSONArray groups = data.getJSONArray("groups");
-                        for (int i = 0; i < groups.length(); i++) {
-                            JoinCreateGroup mlist = new JoinCreateGroup();
+                        if (groups.length()>0) {
+                            createlist = new ArrayList<JoinCreateGroup>();
+                            for (int i = 0; i < groups.length(); i++) {
+                                JoinCreateGroup mlist = new JoinCreateGroup();
 
-                            mlist.setNum(data.getInt("num"));
-                            mlist.setPageCount(data.getInt("pageCount"));
-                            mlist.setCurrentPage(data.getInt("currentPage"));
-                            mlist.setUser_name(data.getString("user_name"));
+                                mlist.setNum(data.getInt("num"));
+                                mlist.setPageCount(data.getInt("pageCount"));
+                                mlist.setCurrentPage(data.getInt("currentPage"));
+                                mlist.setUser_name(data.getString("user_name"));
 
-                            mlist.setName(groups.getJSONObject(i).getString("name"));
-                            mlist.setId(groups.getJSONObject(i).getInt("id"));//星球ID
-                            mlist.setG_image(groups.getJSONObject(i).getString("g_image"));
-                            mlist.setG_introduction(groups.getJSONObject(i).getString("g_introduction"));
-
-                            createlist.add(mlist);
+                                mlist.setName(groups.getJSONObject(i).getString("name"));
+                                mlist.setId(groups.getJSONObject(i).getInt("id"));//星球ID
+                                mlist.setG_image(groups.getJSONObject(i).getString("g_image"));
+                                mlist.setG_introduction(groups.getJSONObject(i).getString("g_introduction"));
+                                createlist.add(mlist);
+                            }
                         }
-
                         MyApplication.setCreateGroupArrayList(createlist);
                         Message message=new Message();
+
                         if (createlist==null){
                             message.what=4;
                         }else {
                             message.what=5;
-                            message.obj=arraylist;
+                            message.obj=createlist;
                         }
                         handler.sendMessage(message);
                     } catch (JSONException e) {
@@ -470,4 +542,161 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
 
         }).start();
     }
+
+
+    private static RelativeLayout relay;
+
+public static void createPost(){
+    if (relay.getVisibility()==View.GONE){
+        if (MyApplication.getMyGroupPostsInfo()==null&&
+                MyApplication.getJoinGroupArrayList()==null&&
+                MyApplication.getCreateGroupArrayList()==null){
+            Toast.makeText(mContext,"您的星球什么都没有，先干些其他事吧",Toast.LENGTH_SHORT).show();
+        }else {
+Log.e("getMyGroupPostsInfo()",MyApplication.getMyGroupPostsInfo()+"");
+            Log.e("getJoinGroupArrayList()",MyApplication.getJoinGroupArrayList()+"");
+            Log.e("getCreaGroupArrayList()",MyApplication.getCreateGroupArrayList()+"");
+            createpostMethod();
+            isVisibilty = true;
+        }
+    }else {
+        relay.setVisibility(View.GONE);
+        isVisibilty=false;
+    }
+}
+
+
+    public static void createpostMethod(){
+
+        relay.setVisibility(View.VISIBLE);
+        final List<View> viewpagelist=new ArrayList<View>();
+        mXcircleindicator=(Xcircleindicator)view. findViewById(R.id.Xcircleindicator);
+        mPager=(ViewPager) view.findViewById(R.id.ViewPager);
+
+        View selectview;
+        GridView selectGrid=null;
+        final List<JoinCreateGroup> datalist=MyApplication.getJoinGroupArrayList();
+        gridviewAdapter adapter;
+        List<JoinCreateGroup> everlist=null;
+        for (int i=1;i<=datalist.size();i++){
+            int j=1;
+            if ((i % 6)==0){
+                everlist=new ArrayList<JoinCreateGroup>();
+                for (;j<=i;j++){
+
+                    everlist.add(datalist.get(j-1));
+                    //Log.e("everlist",everlist+"");
+                }
+                selectview=LayoutInflater.from(mContext).inflate(R.layout.fragment_mygroup_selectgroup, null);
+                selectGrid= (GridView) selectview.findViewById(R.id.selectGridView);
+                adapter=new gridviewAdapter(everlist);
+                selectGrid.setAdapter(adapter);
+                viewpagelist.add(selectview);
+                j=i+1;
+            }
+        }
+        if(datalist.size()<6&&datalist.size()>0){
+            everlist=new ArrayList<JoinCreateGroup>();
+            for (int j=1;j<=datalist.size();j++){
+
+                everlist.add(datalist.get(j-1));
+            }
+            selectview=LayoutInflater.from(mContext).inflate(R.layout.fragment_mygroup_selectgroup, null);
+            selectGrid= (GridView) selectview.findViewById(R.id.selectGridView);
+            adapter=new gridviewAdapter(everlist);
+            selectGrid.setAdapter(adapter);
+            viewpagelist.add(selectview);
+        }
+        ViewPagerAdapter mAdapter=new ViewPagerAdapter(viewpagelist);
+        mPager.setAdapter(mAdapter);
+
+        mXcircleindicator.initData(viewpagelist.size(), 0);
+
+        mXcircleindicator.setCurrentPage(0);
+
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mXcircleindicator.setCurrentPage(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+    selectGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int group_id=datalist.get((mPager.getCurrentItem())*6+position).getId();
+        String group_name=datalist.get((mPager.getCurrentItem())*6+position).getName();
+        String userID=MyApplication.getUserInfo().get(0).get("userID");
+
+        Intent intent=new Intent(mContext, CreatEditPostActivity.class);
+        intent.putExtra("code",2);
+        intent.putExtra("groupName",group_name);
+        intent.putExtra("group_id",group_id);
+        intent.putExtra("user_id",userID);
+        activity.startActivity(intent);
+
+    }
+});
+    }
+
+    private static class gridviewAdapter extends BaseAdapter{
+        private List<JoinCreateGroup> lists;
+        public gridviewAdapter(List<JoinCreateGroup> s){
+            lists=s;
+        }
+        @Override
+        public int getCount() {
+            return lists.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if (convertView==null){
+                viewHolder=new ViewHolder();
+                convertView=LayoutInflater.from(mContext).inflate(R.layout.viewpage_indictor_item,parent,false);
+                viewHolder.imageView= (ImageView) convertView.findViewById(R.id.image);//lists.get(position).getG_image();
+                viewHolder.textView= (TextView) convertView.findViewById(R.id.text);//lists.get(position).getName()
+                convertView.setTag(viewHolder);
+
+            }else {
+                viewHolder= (ViewHolder) convertView.getTag();
+            }
+            String urlTag=lists.get(position).getG_image();
+            if (urlTag!=null) {
+                viewHolder.imageView.setTag(urlTag);
+                new ImageLoader().showImageByThread(viewHolder.imageView, urlTag);
+            }
+            viewHolder.textView.setTextColor(Color.BLACK);
+            viewHolder.textView.setText(lists.get(position).getName());
+            return convertView;
+        }
+
+        class ViewHolder{
+            ImageView imageView;
+            TextView textView;
+        }
+    }
+
+
 }

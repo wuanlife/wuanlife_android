@@ -44,7 +44,7 @@ import java.util.ArrayList;
 /**
  * Created by Frostmaki on 2016/10/4.
  */
-public class CreatePostFragment extends Fragment implements View.OnClickListener{
+public class HomeCreatePostFragment extends Fragment implements View.OnClickListener{
     View mainview;
 
 
@@ -287,11 +287,13 @@ public class CreatePostFragment extends Fragment implements View.OnClickListener
         if (requestCode==GALLERY_REQUEST_CODE){
             if(data==null){
                 return;
-            }else {
+            }{
                 Uri uri;
                 uri=data.getData();
                 imagecontentpath=uri;
+                //Log.e("前Uri----->",uri.toString());
                 Uri fileUri=convertUri(uri);
+                //startiImageZoom(fileUri);
 
             }
         }

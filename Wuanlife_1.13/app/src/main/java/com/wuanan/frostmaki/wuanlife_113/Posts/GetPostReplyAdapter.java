@@ -50,7 +50,7 @@ replyCount=textView1;
         if (arrayList==null){
             Log.e("GetPostReplyadapter","   arraylist为空");
         }else {
-            Log.e("GetPostReplyadapter","   arraylist"+arrayList.size());
+
             if (convertView==null) {
                 viewHolder = new ViewHolder();
                 convertView = LayoutInflater.from(mContext)

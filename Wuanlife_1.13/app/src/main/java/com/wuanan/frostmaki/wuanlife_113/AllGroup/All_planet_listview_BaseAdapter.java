@@ -21,13 +21,12 @@ import java.util.HashMap;
 public class All_planet_listview_BaseAdapter extends BaseAdapter{
     private Context mContext;
     private ArrayList<HashMap<String,String>> arraylist;
-    private Button currentPage;
 
-    public All_planet_listview_BaseAdapter(Context context, ArrayList<HashMap<String,String>> arrayList,
-                                           Button currenPage){
+
+    public All_planet_listview_BaseAdapter(Context context, ArrayList<HashMap<String,String>> arrayList){
         mContext=context;
         this.arraylist=arrayList;
-        this.currentPage=currenPage;
+
     }
     @Override
     public int getCount() {
@@ -66,7 +65,7 @@ public class All_planet_listview_BaseAdapter extends BaseAdapter{
 
         viewHolder.all_planet_listview_title.setText(arraylist.get(position).get("title"));
         viewHolder.all_planet_listview_text.setText(arraylist.get(position).get("text"));
-        currentPage.setText(arraylist.get(position).get("currentPage")+" / "+arraylist.get(position).get("pageCount"));
+
 
         //viewHolder.all_planet_listview_image.setImageResource(R.drawable.background);
           String urlTag=arraylist.get(position).get("image");

@@ -1,6 +1,7 @@
 package com.wuanan.frostmaki.wuanlife_113;
 
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
@@ -15,9 +16,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,6 +29,9 @@ import android.widget.Toast;
 
 import com.nineoldandroids.view.ViewHelper;
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.Fragment_allgroup;
+import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
+import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatePostFragment;
+import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.HomeCreatePostFragment;
 import com.wuanan.frostmaki.wuanlife_113.Home.Fragment_home;
 import com.wuanan.frostmaki.wuanlife_113.LoginRegisterCancel.BaseActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MygroupFragment;
@@ -45,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout noperson;
     private RelativeLayout person;
 
+    private Boolean isman=true;
+
     private ViewPager mViewPager;
     private FragmentPagerAdapter mfragmentPagerAdapter;
     private List<Fragment> mFragments;
@@ -53,12 +62,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button register;
     private Button cancel;
 
+
     private TextView l_name;
     private TextView l_sex;
     private TextView l_mail;
     private TextView l_date;
 
-    private TabLayout tab;
+    private static TabLayout tab;
 
     /**
      * 下划线图片宽度
@@ -70,6 +80,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case 0 :
                     MyApplication.setisLogin(false);
                     MyApplication.setUserInfo(null);
+                    MyApplication.setCreateGroupArrayList(null);
+                    MyApplication.setJoinGroupArrayList(null);
+                    MyApplication.setGroupListInfo(null);
+                    MyApplication.setMyGroupPostsInfo(null);
+                    MyApplication.setHomePostsInfo(null);
+                    MyApplication.setGroupListInfo(null);
                     Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                     onStart();
             break;
@@ -88,14 +104,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //requestWindowFeature(Window.FEATURE_SUPPORT_ACTION_BAR);
         setContentView(R.layout.activity_main);
+
+
         initToolbar();
         initView();
 
         initDrawerLayout();
-        //Fragment baseFragment=new Fragment();
-        //FragmentManager fm=getFragmentManager();
-        //fm.beginTransaction().replace(R.id.main_content,baseFragment).commit();
+
         tab.getTabAt(1).select();
+
 
     }
 
@@ -164,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TextView textView = (TextView) findViewById(R.id.toolbar_title);
+        final TextView textView = (TextView) findViewById(R.id.toolbar_title);
         textView.setText("午安网");
         toolbar.setTitle("");
 
@@ -181,8 +198,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
         );
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_create :
+                        int user_id=0;
+                        if (MyApplication.getisLogin()==true){
+
+                            tab.getTabAt(0).select();
+                            MygroupFragment.createPost();
+                        }else {
+                            Toast.makeText(MainActivity.this,"请登录",Toast.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mygroup_menu,menu);
+        return true;
+    }
 
     private void initView() {
         tab = (TabLayout) findViewById(R.id.tab);
@@ -288,6 +329,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         l_date= (TextView) findViewById(R.id.l_date);
 
         l_sex.setOnClickListener(this);
+
+    }
+
+    public static void setTabVisibilty(){
+        tab.setVisibility(View.VISIBLE);
+    }
+    public static void setTabGone(){
+        tab.setVisibility(View.GONE);
     }
 
     @Override
@@ -309,7 +358,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.l_sex :
-                l_sex.setText("女");
+                if (isman==true) {
+                    l_sex.setText("女");
+                    isman=false;
+                }else{
+                    l_sex.setText("男");
+                    isman=true;
+                }
                 break;
         }
 
@@ -375,5 +430,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             l_date.setText(str);
         }
+
+
+        initToolbar();
+        initView();
+
+        initDrawerLayout();
+
+        tab.getTabAt(1).select();
     }
+
+
 }

@@ -53,7 +53,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     private String userID=null;
     private String group_name=null;
 
-    public int TOASTMESSAGE=1;
+    public int TOASTMESSAGE=2;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -73,12 +73,15 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
 
                     break;
                 case 1 :  //处理消息
-                    String message= (String) msg.obj;
-                listView.setVisibility(View.GONE);
+                    //String message= (String) msg.obj;
+                    listView.setVisibility(View.GONE);
                     nothing.setVisibility(View.VISIBLE);
                     //Toast.makeText(GroupPostsActivity.this,message,Toast.LENGTH_SHORT).show();
                     break;
-
+                case 2:
+                    String message= (String) msg.obj;
+                    Toast.makeText(GroupPostsActivity.this,message,Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };
@@ -152,7 +155,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
                             /*
                             加入星球
                              */
-                        joinGroup(group_id,userID);
+                        joinGroup();
                         break;
                 }
                 return true;
@@ -163,33 +166,39 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     /*
                加入星球
                              */
-    private void joinGroup(final int group_id, final String userID) {
+    private void joinGroup() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String msg=null;
                 String ApiHost = MyApplication.getApiHost();
                 String Pr_URL="http://"+ApiHost+"/?service=Group.Join"
-                        +"&group_id="+group_id+"&user_id="+userID;
+                        +"&group_base_id="+group_id+"&user_id="+userID;
                 String JsonData = Http_Url.getUrlReponse(Pr_URL);
                 try{
                     JSONObject jsonobject=new JSONObject(JsonData);
-                    JSONObject data=jsonobject.getJSONObject("data");
-                    int code=  data.getInt("code");
-                    if (code==0){
-                        msg=data.getString("msg");
+                    if (jsonobject.getInt("ret")==200) {
+                        JSONObject data = jsonobject.getJSONObject("data");
+                        int code = data.getInt("code");
+
+                        if (code == 0) {
+                            msg = data.getString("msg");
+                        } else {
+                            msg="加入成功";
+                        }
                     }else {
-                        msg="加入成功！";
+                        msg=jsonobject.getString("msg");
                     }
+                    Message message=new Message();
+                    message.what=TOASTMESSAGE;
+                    message.obj=msg;
+
+                    handler.sendMessage(message);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Message message=new Message();
-                message.what=TOASTMESSAGE;
-                message.obj=msg;
-                handler.sendMessage(message);
             }
-        });
+        }).start();
     }
 
     private void initView() {

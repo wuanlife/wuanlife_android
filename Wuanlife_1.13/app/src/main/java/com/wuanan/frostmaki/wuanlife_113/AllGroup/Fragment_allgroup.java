@@ -9,20 +9,26 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts.GroupPostsActivity;
+import com.wuanan.frostmaki.wuanlife_113.MainActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
+import com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,12 +43,16 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
     private Button pre;
     private Button next;
     private Button currentPage;
-    private ListView all_planet_ListView;
+    private ListView mlistView;
     private ArrayList<HashMap<String,String>> all_planet_arrayList;
     private BaseAdapter all_planet_baseAdapter;
     private Context mContext;
     private int index=1;
     private int pageCount=1;
+
+    private int lastVisibleItemPosition=0;
+    private MySwipeRefreshLayout mRefreshLayout;
+    private ImageButton arrow_update;
 
     private Handler handler=new Handler(){
         @Override
@@ -52,10 +62,9 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
                     ArrayList<HashMap<String,String>> arrayList=(ArrayList<HashMap<String,String>>)msg.obj;
                     all_planet_baseAdapter = new All_planet_listview_BaseAdapter(
                             mContext,
-                            arrayList,
-                            currentPage);
+                            arrayList);
                     pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
-                    all_planet_ListView.setAdapter(all_planet_baseAdapter);
+                    mlistView.setAdapter(all_planet_baseAdapter);
             }
         }
     };
@@ -64,24 +73,79 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_allgroup,container,false);
 
-
-        pre= (Button) view.findViewById(R.id.pre);
-        next= (Button) view.findViewById(R.id.next);
-        currentPage= (Button) view.findViewById(R.id.currentPage);
-        //createGroup.setOnClickListener(this);
-        pre.setOnClickListener(this);
-        next.setOnClickListener(this);
-
-        all_planet_ListView= (ListView) view.findViewById(R.id.listview);
+        mlistView= (ListView) view.findViewById(R.id.listview);
+        mRefreshLayout= (MySwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
         mContext=getActivity().getApplicationContext();
 
+        mlistView.setOnItemClickListener(this);
 
-        all_planet_ListView.setOnItemClickListener(this);
+        mRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        //mRefreshLayout.setEnabled(false);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                longTimeOperation();
+            }
+        });
+        mRefreshLayout.setOnLoadListener(new MySwipeRefreshLayout.OnLoadListener() {
+            @Override
+            public void onLoad() {
+                loadMore();
+
+            }
+        });
+
+        arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
+        arrow_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.setTabVisibilty();
+            }
+        });
+
+        mlistView.setOnItemClickListener(this);
 
         getRes();
         return  view;
     }
+
+    private void loadMore() {
+        if (index<pageCount) {
+            mRefreshLayout.setRefreshing(true);
+
+            ++index;
+            getRes();
+            all_planet_baseAdapter.notifyDataSetChanged();
+
+            mRefreshLayout.setRefreshing(false);
+        }else {
+            Toast.makeText(mContext,"已经是最后一页",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void longTimeOperation() {
+        if (index>1){
+            mRefreshLayout.setRefreshing(true);
+            --index;
+            getRes();
+            all_planet_baseAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        }else {
+            mRefreshLayout.setRefreshing(true);
+
+            getRes();
+            all_planet_baseAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        }
+
+
+    }
+
 
     private void getRes() {
         new Thread(new Runnable() {
@@ -120,26 +184,7 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.pre:
-                if (index > 1) {
-                    --index;
-                    getRes();
-                    all_planet_baseAdapter.notifyDataSetChanged();
-                } else {
-                    Log.e("pre", "cuowu");
-                }
-                break;
-            case R.id.next:
 
-                if (index < pageCount) {
-                    ++index;
-                    getRes();
-                    all_planet_baseAdapter.notifyDataSetChanged();
-
-                } else {
-                    Log.e("next", "cuowu");
-                }
-                break;
             default:
                 break;
         }

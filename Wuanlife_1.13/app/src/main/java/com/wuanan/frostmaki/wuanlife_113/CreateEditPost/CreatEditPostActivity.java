@@ -98,6 +98,9 @@ public class CreatEditPostActivity extends AppCompatActivity {
                 bundle.putInt("user_id",user_id);
                 create.setArguments(bundle);
                 fm_create.beginTransaction().replace(R.id.content_frame,create).commit();
+                break;
+            case 3 :
+                break;
         }
     }
 

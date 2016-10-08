@@ -154,6 +154,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 fm.beginTransaction().replace(R.id.content_frame, fragment_register).addToBackStack(null).commit();
                 break;
             case R.id.forgetpassword :
+                Fragment fragment_repsw=new RepswFragment();
+                FragmentManager fm_repsw=getFragmentManager();
+                fm_repsw.beginTransaction().replace(R.id.content_frame,fragment_repsw).commit();
                 break;
             case R.id.login :
                 getRes();
