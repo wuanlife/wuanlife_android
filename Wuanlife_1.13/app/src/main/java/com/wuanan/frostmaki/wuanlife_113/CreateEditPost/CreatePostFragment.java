@@ -30,6 +30,7 @@ import com.qiniu.android.storage.UploadOptions;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Permission;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -197,26 +198,35 @@ public class CreatePostFragment extends Fragment implements View.OnClickListener
                 String resultData= Http_Url.getUrlReponse(Pre_URL);
                 String msg=null;
                 try {
+
                     JSONObject jsonObject = new JSONObject(resultData);
-                    JSONObject data = jsonObject.getJSONObject("data");
+                    int ret=jsonObject.getInt("ret");
+                    Message message = new Message();
+                    if (ret==200){
+                        JSONObject data = jsonObject.getJSONObject("data");
 
-                    int code=data.getInt("code");
-                    Message message=new Message();
+                        int code = data.getInt("code");
 
-                    if (code==1) {
-                        message.what=1;
-                        JSONObject info=data.getJSONObject("info");
-                        String post_id=info.getString("post_base_id");
-                        message.obj=post_id;
+
+                        if (code == 1) {
+                            message.what = 1;
+                            JSONObject info = data.getJSONObject("info");
+                            String post_id = info.getString("post_base_id");
+                            message.obj = post_id;
                         /*
                         跳转到详情帖子
                          */
 
-                    }else {
-                        message.what=3;
-                        msg=data.getString("msg");
-                        message.obj=msg;
+                        } else {
+                            message.what = 3;
+                            msg = data.getString("msg");
+                            message.obj = msg;
 
+                        }
+                    }else {
+                        message.what = 3;
+                        msg = jsonObject.getString("msg");
+                        message.obj = msg;
                     }
                     handler.sendMessage(message);
                 }catch (Exception e){
@@ -317,6 +327,7 @@ public class CreatePostFragment extends Fragment implements View.OnClickListener
     }
 
     public Uri saveBitmapAndGetPath(Bitmap bitmap) {
+        Permission.verifyStoragePermissions(getActivity());
         File tmpDir=new File(Environment.getExternalStorageDirectory()+"/com.wuanlife_113/");
         if (!tmpDir.exists()){
             tmpDir.mkdir();

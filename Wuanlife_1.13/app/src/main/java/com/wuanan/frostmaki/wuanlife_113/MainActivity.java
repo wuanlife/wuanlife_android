@@ -203,11 +203,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_create :
+
                         int user_id=0;
                         if (MyApplication.getisLogin()==true){
 
-                            tab.getTabAt(0).select();
-                            MygroupFragment.createPost();
+                            if (tab.getTabAt(2).isSelected()){
+                                Intent intent=new Intent(MainActivity.this, BaseActivity.class);
+                                intent.putExtra("code",4);
+                                startActivity(intent);
+                            }else {
+                                tab.getTabAt(0).select();
+                                MygroupFragment.createPost();
+                            }
                         }else {
                             Toast.makeText(MainActivity.this,"请登录",Toast.LENGTH_SHORT).show();
                         }

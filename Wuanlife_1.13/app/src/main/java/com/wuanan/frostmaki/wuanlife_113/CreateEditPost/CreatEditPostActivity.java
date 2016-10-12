@@ -1,8 +1,11 @@
 package com.wuanan.frostmaki.wuanlife_113.CreateEditPost;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -109,7 +113,7 @@ public class CreatEditPostActivity extends AppCompatActivity {
         groupName=getIntent().getStringExtra("groupName");
         //group_id=getIntent().getIntExtra("group_id",0);
         user_id= getIntent().getIntExtra("user_id",0);
-
+        Log.e("user_id发帖",user_id+"");
     }
 
     private void initToolbar() {
@@ -131,6 +135,7 @@ public class CreatEditPostActivity extends AppCompatActivity {
         toolbar_title= (TextView) findViewById(R.id.toolbar_title);
 
     }
+
 
 
 }

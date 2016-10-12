@@ -53,7 +53,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
     private int pageCount=1;
     private int lastVisibleItemPosition=0;
 
-    private MySwipeRefreshLayout mRefreshLayout;
+    private SwipeRefreshLayout mRefreshLayout;
     private ImageButton arrow_update;
 
     private Handler handler=new Handler(){
@@ -67,8 +67,11 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
                             arraylist);
                     pageCount= arraylist.get(0).getPageCount();
                     mlistview.setAdapter(posts_listview_baseAdapter);
-                    Log.e("为什么不显示",arraylist.toString());
+                    Log.e("为什么不显示000000",arraylist.toString());
 
+                    break;
+                case 1:
+                    Log.e("为什么不显示111111",arraylist.toString());
                     break;
 
             }
@@ -89,7 +92,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
         mlistview= (ListView) view.findViewById(R.id.listView_home);
         arraylist= new ArrayList<Postlist>();
 
-        mRefreshLayout= (MySwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mRefreshLayout= (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
 
         mlistview.setOnItemClickListener(this);
@@ -106,13 +109,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
                 longTimeOperation();
             }
         });
-        mRefreshLayout.setOnLoadListener(new MySwipeRefreshLayout.OnLoadListener() {
-            @Override
-            public void onLoad() {
-                loadMore();
 
-            }
-        });
 
         arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
         arrow_update.setOnClickListener(new View.OnClickListener() {

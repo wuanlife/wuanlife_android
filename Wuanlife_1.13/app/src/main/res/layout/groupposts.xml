@@ -4,15 +4,22 @@
     android:layout_height="match_parent">
 
     <include layout="@layout/include_toolbar"/>
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
     <ListView
         android:id="@+id/listview_groupposts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+
         android:dividerHeight="8dp"
         android:visibility="visible"></ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
     <TextView
         android:id="@+id/nothing"
         android:layout_width="match_parent"

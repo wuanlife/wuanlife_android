@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.wuanan.frostmaki.wuanlife_113.AllGroup.Create_planet_Fragment;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyJoinCreateFragment;
 import com.wuanan.frostmaki.wuanlife_113.R;
 
@@ -46,6 +47,12 @@ public class BaseActivity extends AppCompatActivity {
                 Fragment fragment_joincreateGroup=new MyJoinCreateFragment();
                 FragmentManager fm_joincreateGroup=getFragmentManager();
                 fm_joincreateGroup.beginTransaction().replace(R.id.content_frame,fragment_joincreateGroup).commit();
+                break;
+            case 4 :
+                toolbar_title.setText("创建星球");
+                Fragment fragment_createGroup=new Create_planet_Fragment();
+                FragmentManager fm_createGroup=getFragmentManager();
+                fm_createGroup.beginTransaction().replace(R.id.content_frame,fragment_createGroup).commit();
                 break;
         }
     }

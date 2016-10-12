@@ -27,7 +27,7 @@ public class GetPostReply_JSON {
 
             JSONObject jsonObject = new JSONObject(s);
             if (jsonObject.getInt("ret")==200){
-                arrayList=new ArrayList<HashMap<String, String>>();
+
 
                 JSONObject data=jsonObject.getJSONObject("data");
                 postID=data.getString("postID");
@@ -37,6 +37,7 @@ public class GetPostReply_JSON {
 
                 JSONArray reply=data.getJSONArray("reply");
                 for (int i=0;i<reply.length();++i){
+                    arrayList=new ArrayList<HashMap<String, String>>();
                     JSONObject reply_details=reply.getJSONObject(i);
                     nickname=reply_details.getString("nickname");
                     createTime=reply_details.getString("createTime");

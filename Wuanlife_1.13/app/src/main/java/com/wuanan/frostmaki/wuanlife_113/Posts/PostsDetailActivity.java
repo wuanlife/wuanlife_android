@@ -31,6 +31,7 @@ import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyGroupJson;
 import com.wuanan.frostmaki.wuanlife_113.NewView.PostDetailsClass;
 import com.wuanan.frostmaki.wuanlife_113.R;
+import com.wuanan.frostmaki.wuanlife_113.Utils.GetImageSrc;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.ImageLoader;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
@@ -47,6 +48,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,23 +66,22 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
     private TextView GroupName;
     private TextView createTime;
     private TextView mainText;
-    private LinearLayout postDetail_image_linear;
+    private LinearLayout postDetail_replylist_btn;
 
 
 
-    private int ItemRight=1;//1 有权限  0无权限
     private boolean isSticky=false;  //未置顶， 点击要求置顶
     private boolean isLogin=false;
 
 
-
+private LinearLayout image_linear;
     private ListView PostReplyListview;
     private TextView replyCount;
     private Button pre;
     private Button next;
     private TextView currentPage;
 
-
+private Bitmap imageBitmap=null;
 
     //private String user_id="";//回帖人ID
     private String text="";//内容
@@ -118,40 +119,28 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                     createTime.setText(postDetail_Base.getCreateTime());
                     //mainText.setText(hashMap01.get("text"));
 
-                    String source =postDetail_Base.getText();
+                    String source = postDetail_Base.getText();
                     handleText(source);
 
-                    /*
-                    处理Image
-                     */
-                 /*   if (postDetail_Base.getImage().size()>0){
-                        for (int i=0;i<postDetail_Base.getImage().size();i++){
-                            ImageView imageView=new ImageView(PostsDetailActivity.this);
-                            String urlTag=postDetail_Base.getImage().get(i);
-                            imageView.setTag(urlTag);
-                            new ImageLoader().showImageByThread(imageView,urlTag);
-                        }
-                    }*/
                     break;
                 case 3:
                     //kan回帖成功
-                    ArrayList<HashMap<String,String>> arrayList0202=null;
-                    arrayList0202= (ArrayList<HashMap<String, String>>) msg.obj;
-
-
-                    adapter=new GetPostReplyAdapter(arrayList0202,mContext,replyCount,currentPage);
+                    ArrayList<HashMap<String, String>> arrayList0202 = null;
+                    arrayList0202 = (ArrayList<HashMap<String, String>>) msg.obj;
+                    adapter = new GetPostReplyAdapter(arrayList0202, mContext, replyCount, currentPage);
                     PostReplyListview.setAdapter(adapter);
                     setListViewHeightBasedOnChildren(PostReplyListview);
                     break;
                 case 4:
-                    //huitie
+                    //回帖
                     getPostReply();
+                    replyText.setText("");
                     adapter.notifyDataSetChanged();
                     break;
                 case 5:
                     //删帖 置顶
-                    Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
-                    if (msg.getData().getInt("code")==1) {
+                    Toast.makeText(mContext, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                    if (msg.getData().getInt("code") == 1) {
                         if (isSticky == false) {
 
                             isSticky = true;
@@ -165,13 +154,22 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
 
                     break;
                 case 6:
-                    mainText.append((CharSequence) msg.obj);
+                    //mainText.append((CharSequence) msg.obj);
+                    if (imageBitmap != null) {
+
+                    }else {
+                        Log.e("无照片","1111");
+                    }
                     break;
                 case 7 :
                     Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
                     if (msg.getData().getInt("code")==1) {
                         finish();
                     }
+                    break;
+                case 8:
+                    //没有回帖
+                    postDetail_replylist_btn.setVisibility(View.GONE);
                     break;
             }
         }
@@ -401,7 +399,8 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
 
         reply.setOnClickListener(this);
 
-        postDetail_image_linear= (LinearLayout) findViewById(R.id.postitemImage_linear);
+        postDetail_replylist_btn= (LinearLayout) findViewById(R.id.postBase_linera03);
+        image_linear= (LinearLayout) findViewById(R.id.postDetail_image_linear);
     }
 
     @Override
@@ -491,15 +490,18 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                     //Log.e("PostsDetails——reply.URL",Pre_URL);
                     String resultData = Http_Url.getUrlReponse(Pre_URL);
                     arrayList02 = GetPostReply_JSON.getJSONParse(resultData);
+                    Message message = new Message();
                     if (arrayList02 == null) {
                         Log.e("huo获得回复帖子失败", "Posts_Fragment  ");
+                        message.what=8;
                     } else {
                         //Log.e("获得回复帖子", "Posts_Fragment  "+arrayList02.size());
-                        Message message = new Message();
+
                         message.what = GetPostReplyInfo;
                         message.obj = arrayList02;
-                        handler.sendMessage(message);
+
                     }
+                    handler.sendMessage(message);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -564,9 +566,29 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
     对Text进行处理
      */
 
-    private void handleText(String s) {
+    private void handleText(String s){
+        mainText.setText(GetImageSrc.delHTMLTag(s));
+        List<String> list=GetImageSrc.getImgSrc(s);
+        for (int i=0;i<list.size();i++){
+            System.out.println(list.get(i));
+            //getTextThread getTextThread=new getTextThread(list.get(i));
+            ImageView imageView = new ImageView(mContext);
+            String urlTag = list.get(i);
+            imageView.setTag(urlTag);
+            new ImageLoader().showImageByThread(imageView, urlTag);
+            //image.setImageBitmap(imageBitmap);
+            //imageView.setImageResource(R.drawable.background);
+            if (imageView==null){
+                Log.e("image为null","111");
+            }else {
+                image_linear.addView(imageView);
+            }
+        }
+    }
+    /*private void handleText(String s) {
         String source=s;
         String pattern = "<img\\ssrc=([^>]*)>";
+        //String pattern = "<img[\\s]+src[\\s]*=[\\s]*((['\"][\\'\"])|(?<src>[^\\s]*))";
         Pattern p = Pattern.compile(pattern);
         if (source!=null){
             Matcher m = p.matcher(source);
@@ -637,7 +659,7 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
 
             }
         }
-    }
+    }*/
 
     class getTextThread extends Thread {
         String str = null;
@@ -657,18 +679,20 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
                 URL url = new URL(strURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 InputStream inputStream = httpURLConnection.getInputStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                SpannableString spannableString = new SpannableString("<img src=" + str + ">");
+                //Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageBitmap = BitmapFactory.decodeStream(inputStream);
+                //SpannableString spannableString = new SpannableString("<img src=" + str + ">");
 
-                ImageSpan imageSpan = new ImageSpan(mContext,
-                        bitmap);
+                //ImageSpan imageSpan = new ImageSpan(mContext,
+                 //       bitmap);
 
-                spannableString.setSpan(imageSpan, 0, spannableString.length(), SpannableString.SPAN_MARK_MARK);
+                //spannableString.setSpan(imageSpan, 0, spannableString.length(), SpannableString.SPAN_MARK_MARK);
 
 
                 Message message = new Message();
                 message.what = 6;
-                message.obj = spannableString;
+                //message.obj = spannableString;
+                //message.obj=bitmap;
                 handler.sendMessage(message);
 
 

@@ -176,6 +176,7 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
         int group_id=Integer.parseInt(MyApplication.getGroupInfo().get(position).get("id"));
         String group_name=MyApplication.getGroupInfo().get(position).get("title");
         Intent intent=new Intent(getActivity(), GroupPostsActivity.class);
+
         intent.putExtra("group_id",group_id);
         intent.putExtra("group_name",group_name);
         startActivity(intent);

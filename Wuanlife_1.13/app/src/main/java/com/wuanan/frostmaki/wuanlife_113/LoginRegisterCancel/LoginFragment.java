@@ -39,6 +39,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private Button register;
     private Button forgetpassword;
     private Button login;
+    private Boolean isLogin=false;
 
     private View view;
     private Context mContext;
@@ -53,6 +54,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     break;
                 case 1://登陆失败
                     Toast.makeText(mContext,msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                    isLogin=false;
             }
         }
     };
@@ -159,7 +161,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 fm_repsw.beginTransaction().replace(R.id.content_frame,fragment_repsw).commit();
                 break;
             case R.id.login :
-                getRes();
+                if (isLogin==false) {
+                    getRes();
+                }
                 break;
         }
     }

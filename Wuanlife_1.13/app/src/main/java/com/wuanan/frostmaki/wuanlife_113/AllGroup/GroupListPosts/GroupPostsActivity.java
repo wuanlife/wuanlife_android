@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -43,14 +44,14 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     private Button btn_pre;
     private Button btn_next;
     private Button btn_currentpage;
-
+    private SwipeRefreshLayout mRefreshLayout;
 
     private ArrayList<GroupPostClass> arraylist;
     private GroupPosts_listview_BaseAdapter posts_listview_baseAdapter;
     private int index=1;
     private int pageCount=1;
     private int group_id=0;
-    private String userID=null;
+    private int userID=0;
     private String group_name=null;
 
     public int TOASTMESSAGE=2;
@@ -106,7 +107,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.groupposts_menu, menu);
-        if (userID==null){
+        if (userID==0){
             menu.findItem(R.id.action_join).setVisible(false);
         }
         return true;
@@ -135,10 +136,9 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.action_create:
-                        if (userID==null){
+                        if (userID==0){
                             Toast.makeText(GroupPostsActivity.this,"未登录",Toast.LENGTH_SHORT).show();
-                        }else
-                         {
+                        }else {
 
                             /*
                             跳转到发帖Activity
@@ -216,9 +216,22 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
         group_id=getIntent().getIntExtra("group_id",0);
         group_name=getIntent().getStringExtra("group_name");
         if (MyApplication.getisLogin()==true) {
-            userID = MyApplication.getUserInfo().get(0).get("userID");
+            userID = Integer.parseInt(MyApplication.getUserInfo().get(0).get("userID"));
         }
+        mRefreshLayout= (android.support.v4.widget.SwipeRefreshLayout) findViewById(R.id.swipe_container);
 
+        mRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        //mRefreshLayout.setEnabled(false);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                longTimeOperation();
+            }
+        });
 
         btn_next.setOnClickListener(this);
         btn_currentpage.setOnClickListener(this);
@@ -253,6 +266,40 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
                 break;
             default:
                 break;
+        }
+    }
+
+    private void longTimeOperation() {
+        if (index > 1) {
+            mRefreshLayout.setRefreshing(true);
+            --index;
+            getRes();
+            posts_listview_baseAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        } else {
+            mRefreshLayout.setRefreshing(true);
+
+            getRes();
+            if (listView.getVisibility()==View.VISIBLE) {
+                posts_listview_baseAdapter.notifyDataSetChanged();
+            }
+            mRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    private void loadMore() {
+        if (index<pageCount) {
+            mRefreshLayout.setRefreshing(true);
+
+            ++index;
+            getRes();
+            posts_listview_baseAdapter.notifyDataSetChanged();
+
+            mRefreshLayout.setRefreshing(false);
+        }else {
+            mRefreshLayout.setRefreshing(true);
+            Toast.makeText(GroupPostsActivity.this,"已经是最后一页",Toast.LENGTH_SHORT).show();
+            mRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -296,5 +343,11 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
         intent.putExtra("groupName",group_name);
 
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getRes();
     }
 }

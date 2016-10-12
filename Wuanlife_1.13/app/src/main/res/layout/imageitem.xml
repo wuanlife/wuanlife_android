@@ -7,12 +7,15 @@
     <FrameLayout
         android:id="@+id/frame"
         android:orientation="vertical" android:layout_width="120dp"
-        android:layout_height="120dp">
+        android:layout_height="120dp"
+        >
         <ImageView
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/background"/>
+            android:src="@drawable/background"
+            android:scaleType="fitCenter"
+            />
         <ImageView
             android:id="@+id/del"
             android:layout_width="30dp"

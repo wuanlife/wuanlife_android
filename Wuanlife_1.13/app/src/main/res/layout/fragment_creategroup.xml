@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp">
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="请输入星球名字"
+        android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:textColor="@color/textColor"
+        android:layout_marginTop="30dp"/>
+
+    <EditText
+        android:id="@+id/edit_groupName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+
+        android:maxLength="20" />
+
+    <TextView
+        android:id="@+id/text_image"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="上传星球图片"
+        android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/textColor"/>
+    <ImageButton
+        android:id="@+id/create_planet_btn"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@color/no"
+        android:src="@drawable/ic_open_in_browser_white_48dp"
+        android:scaleType="fitStart"
+        android:layout_gravity="center"
+
+         />
+
+    <TextView
+        android:id="@+id/text_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:text="星球介绍"
+        android:gravity="center_vertical"
+        android:textSize="15sp"
+        android:textColor="@color/textColor"/>
+
+    <EditText
+        android:id="@+id/edit_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/button"
+        android:text="创    建"
+        android:textSize="20sp"
+        android:textColor="@color/toolbarblue"/>
+
+</LinearLayout>
