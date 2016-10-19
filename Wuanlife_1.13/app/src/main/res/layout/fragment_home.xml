@@ -2,31 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout
+    <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
-    <ListView
-        android:id="@+id/listView_home"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
 
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:dividerHeight="8dp"></ListView>
-    </com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout>
-    <ImageButton
-        android:id="@+id/arrow_update"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/ic_arrow_upward"
-        android:background="@drawable/circlebutton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginBottom="50dp"
-        />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

@@ -146,7 +146,7 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout implements AbsListV
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        MainActivity.setTabGone();
+       // MainActivity.setTabGone();
     }
 
     @Override

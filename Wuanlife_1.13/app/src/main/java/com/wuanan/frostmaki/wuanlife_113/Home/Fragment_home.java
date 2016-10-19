@@ -12,6 +12,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,36 +44,54 @@ import java.util.ArrayList;
  */
 public class Fragment_home extends Fragment implements View.OnClickListener,AdapterView.OnItemClickListener{
     private View view;
-    private ListView mlistview;
-    private ArrayList<Postlist> arraylist;
-    private HomePosts_listview_Adapter posts_listview_baseAdapter;
+    private RecyclerView mRecyclerView;
+    private ArrayList<Postlist> arraylist=null;
+    private HomeRecyclerViewAdapter adapter;
     private Context mContext;
-    private Button currentPage;
-    private Button pre;
-    private Button next;
     private int index=1;
     private int pageCount=1;
-    private int lastVisibleItemPosition=0;
+
+    private LinearLayoutManager linearLayoutManager;
 
     private SwipeRefreshLayout mRefreshLayout;
-    private ImageButton arrow_update;
+
 
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    //ArrayList<Postlist> arrayList=(ArrayList<Postlist>)msg.obj;
-                    posts_listview_baseAdapter = new HomePosts_listview_Adapter(
-                            mContext,
-                            arraylist);
                     pageCount= arraylist.get(0).getPageCount();
-                    mlistview.setAdapter(posts_listview_baseAdapter);
-                    Log.e("为什么不显示000000",arraylist.toString());
+
+                    //绑定适配器
+                    adapter = new HomeRecyclerViewAdapter(mContext, arraylist);
+                    adapter.setOnItemClickListener(new HomeRecyclerViewAdapter.OnItemClickListener() {
+                        @Override
+                        public void OnItemClick(int position) {
+                            //Toast.makeText(mContext, "你点击了第" + position + "个图片",
+                            //        Toast.LENGTH_SHORT).show();
+                            int data1 = MyApplication.getHomePostsInfo().get(position).getPostID();
+                            Intent intent=new Intent(getActivity(), PostsDetailActivity.class);
+                            intent.putExtra("postID", data1);
+                            intent.putExtra("groupName", MyApplication.getHomePostsInfo().get(position).getGroupName());
+                            getActivity().startActivity(intent);
+                        }
+
+                        @Override
+                        public boolean OnItemLongClick(int position) {
+                            return true;
+                            //return false;
+                        }
+                    });
+                    mRecyclerView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
+                    //Log.e("为什么显示000000",arraylist.toString());
 
                     break;
                 case 1:
-                    Log.e("为什么不显示111111",arraylist.toString());
+                    mRefreshLayout.setRefreshing(false);
+                    Toast.makeText(mContext, "暂无数据", Toast.LENGTH_SHORT).show();
+                    Log.e("为什么不显示111111","");
                     break;
 
             }
@@ -83,19 +103,23 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
         view=inflater.inflate(R.layout.fragment_home,container,false);
 
         initView();
-        getRes();
+        //getRes();
         return  view;
     }
 
     private void initView() {
         mContext=getActivity().getApplicationContext();
-        mlistview= (ListView) view.findViewById(R.id.listView_home);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
+        linearLayoutManager
+                = new LinearLayoutManager(mContext);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+
         arraylist= new ArrayList<Postlist>();
 
         mRefreshLayout= (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-
-
-        mlistview.setOnItemClickListener(this);
 
         mRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_blue_bright,
@@ -103,6 +127,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         //mRefreshLayout.setEnabled(false);
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+                getRes();
+            }
+        });
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -110,28 +141,42 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
             }
         });
 
-
-        arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
-        arrow_update.setOnClickListener(new View.OnClickListener() {
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private int lastVisibleItem;
             @Override
-            public void onClick(View v) {
-                MainActivity.setTabVisibilty();
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter
+                        .getItemCount()) {
+                    adapter.setMoreStatus(adapter.LOADING_MORE);
+                    loadMore();
+                }
             }
         });
+
+
+
+
     }
 
     private void loadMore() {
+        mRefreshLayout.setRefreshing(true);
         if (index<pageCount) {
-            mRefreshLayout.setRefreshing(true);
-
             ++index;
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
+            //posts_listview_baseAdapter.notifyDataSetChanged();
 
-            mRefreshLayout.setRefreshing(false);
         }else {
             Toast.makeText(mContext,"已经是最后一页",Toast.LENGTH_SHORT).show();
         }
+        mRefreshLayout.setRefreshing(false);
     }
 
     private void longTimeOperation() {
@@ -139,13 +184,13 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
             mRefreshLayout.setRefreshing(true);
             --index;
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
+            //posts_listview_baseAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }else {
             mRefreshLayout.setRefreshing(true);
 
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
+            //posts_listview_baseAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }
 
@@ -195,10 +240,7 @@ public class Fragment_home extends Fragment implements View.OnClickListener,Adap
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int data1 = MyApplication.getHomePostsInfo().get(position).getPostID();
-        Intent intent=new Intent(getActivity(), PostsDetailActivity.class);
-        intent.putExtra("postID", data1);
-        getActivity().startActivity(intent);
+
 
     }
 

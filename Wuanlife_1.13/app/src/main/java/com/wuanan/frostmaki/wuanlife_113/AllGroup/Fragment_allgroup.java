@@ -10,6 +10,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +26,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts.GroupPostsActivity;
+import com.wuanan.frostmaki.wuanlife_113.Home.HomeRecyclerViewAdapter;
 import com.wuanan.frostmaki.wuanlife_113.MainActivity;
+import com.wuanan.frostmaki.wuanlife_113.Posts.PostsDetailActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Postlist;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,32 +44,52 @@ import java.util.HashMap;
 public class Fragment_allgroup extends Fragment implements AdapterView.OnItemClickListener,View.OnClickListener {
     private View view;
     private TextView name;
-    private Button createGroup;
-    private Button pre;
-    private Button next;
-    private Button currentPage;
+
     private ListView mlistView;
     private ArrayList<HashMap<String,String>> all_planet_arrayList;
-    private BaseAdapter all_planet_baseAdapter;
+    private AGroupRecyclerViewAdapter adapter;
     private Context mContext;
     private int index=1;
     private int pageCount=1;
 
-    private int lastVisibleItemPosition=0;
-    private MySwipeRefreshLayout mRefreshLayout;
-    private ImageButton arrow_update;
+    private RecyclerView mRecyclerView;
+    private ArrayList<HashMap<String,String>> arraylist;
+    private LinearLayoutManager linearLayoutManager;
+    private SwipeRefreshLayout mRefreshLayout;
+
 
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    ArrayList<HashMap<String,String>> arrayList=(ArrayList<HashMap<String,String>>)msg.obj;
-                    all_planet_baseAdapter = new All_planet_listview_BaseAdapter(
+                    adapter = new AGroupRecyclerViewAdapter(
                             mContext,
-                            arrayList);
-                    pageCount= Integer.parseInt(arrayList.get(0).get("pageCount"));
-                    mlistView.setAdapter(all_planet_baseAdapter);
+                            arraylist);
+                    pageCount= Integer.parseInt(arraylist.get(0).get("pageCount"));
+                    adapter.setOnItemClickListener(new AGroupRecyclerViewAdapter.OnItemClickListener() {
+                        @Override
+                        public void OnItemClick(int position) {
+                            //Toast.makeText(mContext, "你点击了第" + position + "个图片",
+                            //        Toast.LENGTH_SHORT).show();
+                            int group_id=Integer.parseInt(MyApplication.getGroupInfo().get(position).get("id"));
+                            String group_name=MyApplication.getGroupInfo().get(position).get("title");
+                            Intent intent=new Intent(getActivity(), GroupPostsActivity.class);
+
+                            intent.putExtra("group_id",group_id);
+                            intent.putExtra("group_name",group_name);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public boolean OnItemLongClick(int position) {
+                            return true;
+                            //return false;
+                        }
+                    });
+                    mRecyclerView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
+                    break;
             }
         }
     };
@@ -73,12 +98,17 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_allgroup,container,false);
 
-        mlistView= (ListView) view.findViewById(R.id.listview);
-        mRefreshLayout= (MySwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
+        linearLayoutManager
+                = new LinearLayoutManager(mContext);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        mRefreshLayout= (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
         mContext=getActivity().getApplicationContext();
 
-        mlistView.setOnItemClickListener(this);
 
         mRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_blue_bright,
@@ -86,29 +116,37 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         //mRefreshLayout.setEnabled(false);
+
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 longTimeOperation();
             }
         });
-        mRefreshLayout.setOnLoadListener(new MySwipeRefreshLayout.OnLoadListener() {
-            @Override
-            public void onLoad() {
-                loadMore();
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private int lastVisibleItem;
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter
+                        .getItemCount()) {
+                    adapter.setMoreStatus(adapter.LOADING_MORE);
+                    loadMore();
+                }
             }
         });
 
-        arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
-        arrow_update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.setTabVisibilty();
-            }
-        });
 
-        mlistView.setOnItemClickListener(this);
+
+
 
         getRes();
         return  view;
@@ -120,7 +158,7 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
 
             ++index;
             getRes();
-            all_planet_baseAdapter.notifyDataSetChanged();
+            //all_planet_baseAdapter.notifyDataSetChanged();
 
             mRefreshLayout.setRefreshing(false);
         }else {
@@ -133,13 +171,13 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
             mRefreshLayout.setRefreshing(true);
             --index;
             getRes();
-            all_planet_baseAdapter.notifyDataSetChanged();
+            //all_planet_baseAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }else {
             mRefreshLayout.setRefreshing(true);
 
             getRes();
-            all_planet_baseAdapter.notifyDataSetChanged();
+            //all_planet_baseAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }
 
@@ -156,13 +194,12 @@ public class Fragment_allgroup extends Fragment implements AdapterView.OnItemCli
                 //Log.e("PostsDetail.URL——————>",Pr_URL);
                 String JsonData= Http_Url.getUrlReponse(Pr_URL);
                 if (JsonData!=null) {
-                    all_planet_arrayList = AllGroupLists_JSON.getJSONParse(JsonData);
+                    arraylist = AllGroupLists_JSON.getJSONParse(JsonData);
 
-                    MyApplication.setGroupListInfo(all_planet_arrayList);
-
+                    MyApplication.setGroupListInfo(arraylist);
                     Message message = new Message();
                     message.what = 0;
-                    message.obj = all_planet_arrayList;
+                    message.obj = arraylist;
                     handler.sendMessage(message);
                 }
             }

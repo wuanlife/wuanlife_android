@@ -61,7 +61,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
             switch (msg.what){
                 case 0:
                     nothing.setVisibility(View.GONE);
-                    listView.setVisibility(View.VISIBLE);
+                    mRefreshLayout.setVisibility(View.VISIBLE);
                     ArrayList<GroupPostClass> arrayList=
                             (ArrayList<GroupPostClass>) msg.obj;
                     posts_listview_baseAdapter = new GroupPosts_listview_BaseAdapter(
@@ -75,7 +75,7 @@ public class GroupPostsActivity extends AppCompatActivity implements View.OnClic
                     break;
                 case 1 :  //处理消息
                     //String message= (String) msg.obj;
-                    listView.setVisibility(View.GONE);
+                    mRefreshLayout.setVisibility(View.GONE);
                     nothing.setVisibility(View.VISIBLE);
                     //Toast.makeText(GroupPostsActivity.this,message,Toast.LENGTH_SHORT).show();
                     break;

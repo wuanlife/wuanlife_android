@@ -55,16 +55,9 @@ public class GetBaseJson {
             lockRight = data.getInt("lockRight");
             deleteRight = data.getInt("deleteRight");
 
-           // JSONArray image = data.getJSONArray("image");
             String image=data.getString("p_image");
             imagelist = null;
-         /*   if (image.length() > 0) {
-                imagelist = new ArrayList<String>();
-                for (int j = 0; j < image.length(); j++) {
 
-                    imagelist.add(image.getString(j));
-                }
-            }*/
 
 
             newpostdatails.setTitle(title);
@@ -82,7 +75,7 @@ public class GetBaseJson {
             newpostdatails.setDeleteRight(deleteRight);
             newpostdatails.setLockRight(lockRight);
 
-            Log.e("postdetailsClass: ",newpostdatails.getText());
+
             return newpostdatails;
 
 

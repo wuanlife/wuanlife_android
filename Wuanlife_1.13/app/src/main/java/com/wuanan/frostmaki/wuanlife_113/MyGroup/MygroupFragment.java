@@ -15,6 +15,8 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,18 +37,15 @@ import android.widget.Toast;
 
 import com.wuanan.frostmaki.wuanlife_113.AllGroup.GroupListPosts.GroupPostsActivity;
 import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
-import com.wuanan.frostmaki.wuanlife_113.Home.HomePosts_listview_Adapter;
+import com.wuanan.frostmaki.wuanlife_113.Home.HomeRecyclerViewAdapter;
 import com.wuanan.frostmaki.wuanlife_113.LoginRegisterCancel.BaseActivity;
-import com.wuanan.frostmaki.wuanlife_113.MainActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.CreatePost.ViewPagerAdapter;
 import com.wuanan.frostmaki.wuanlife_113.Posts.PostsDetailActivity;
 import com.wuanan.frostmaki.wuanlife_113.R;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.ImageLoader;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
-import com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Postlist;
-import com.wuanan.frostmaki.wuanlife_113.Utils.Posts_listview_BaseAdapter;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Xcircleindicator;
 
 import org.json.JSONArray;
@@ -64,12 +63,13 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
     private View headView;
     private View headViewCreate;
 
-    private MySwipeRefreshLayout mRefreshLayout;
-    private ImageButton arrow_update;
+    private SwipeRefreshLayout mRefreshLayout;
 
-    private ListView mlistView;
+    private RecyclerView mRecyclerView;
     private ArrayList<Postlist> arraylist;
-    private HomePosts_listview_Adapter posts_listview_baseAdapter;
+    private MGroupRecyclerViewAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
+
     private static Context mContext;
     private static Activity activity;
 
@@ -93,48 +93,50 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
             Log.e("message.what",msg.what+"");
             switch (msg.what){
                 case 0:
+                    //绑定适配器
+                    adapter = new MGroupRecyclerViewAdapter(mContext, activity,arraylist);
+                    adapter.setOnItemClickListener(new MGroupRecyclerViewAdapter.OnItemClickListener() {
+                        @Override
+                        public void OnItemClick(int position) {
+                            //Toast.makeText(mContext, "你点击了第" + position + "个图片",
+                            //        Toast.LENGTH_SHORT).show();
+                            int data1 = 0;
+                            data1 = MyApplication.getMyGroupPostsInfo().get(position-0).getPostID();
+                            Intent intent = new Intent(getActivity().getApplicationContext(), PostsDetailActivity.class);
+                            intent.putExtra("postID", data1);
+                            intent.putExtra("groupName", MyApplication.getMyGroupPostsInfo().get(position-0).getGroupName());
 
-                    ArrayList<Postlist> arrayList= (ArrayList<Postlist>) msg.obj;
-                    //Log.e("postlist",arrayList.toString());
-                    posts_listview_baseAdapter = new HomePosts_listview_Adapter(
-                            mContext,
-                            arrayList);
-                    pageCount= arrayList.get(0).getPageCount();
-                    mlistView.setAdapter(posts_listview_baseAdapter);
-                    setListViewHeightBasedOnChildren(mlistView);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public boolean OnItemLongClick(int position) {
+                            return true;
+                            //return false;
+                        }
+                    });
+                    mRecyclerView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
+                    mRefreshLayout.setRefreshing(false);
                     myGroup.setVisibility(View.GONE);
                     nomyGroup.setVisibility(View.VISIBLE);
                     break;
-                case 2:
-                    join_linearLayout.setVisibility(View.GONE);
-                    break;
-                case 3 :
 
-                    if (joinlist.size()>0){
-                        join_button_1.setVisibility(View.VISIBLE);
-                        join_button_1.setText(joinlist.get(0).getName());
-                        if (joinlist.size()>1){
-                            join_button_2.setVisibility(View.VISIBLE);
-                            join_button_2.setText(joinlist.get(1).getName());
-
-                        }
-                    }
-                    break;
                 case 4 :
-                    create_linearLayout.setVisibility(View.GONE);
+                    //create_linearLayout.setVisibility(View.GONE);
                     break;
                 case 5 :
 
-                    if (createlist.size()>0){
+                  /*  if (createlist.size()>0){
                         create_button_1.setVisibility(View.VISIBLE);
                         create_button_1.setText(createlist.get(0).getName());
                         if (createlist.size()>1){
                             create_button_2.setVisibility(View.VISIBLE);
                             create_button_2.setText(createlist.get(1).getName());
                         }
-                    }
+                    }*/
                     break;
             }
         }
@@ -148,15 +150,12 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
             user_id=MyApplication.getUserInfo().get(0).get("userID");
             nomyGroup.setVisibility(View.GONE);
             myGroup.setVisibility(View.VISIBLE);
-            getRes();
 
-            initjoinView();
             initjoinData();
-
-            initcreateView();
             initcreateData();
+            getRes();
         }else {
-            Log.e("false","false         ");
+            Log.e("MyGroupfalse","false         ");
             myGroup.setVisibility(View.GONE);
             nomyGroup.setVisibility(View.VISIBLE);
         }
@@ -168,61 +167,72 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
         activity=getActivity();
         mContext=getActivity().getApplicationContext();
 
-        mlistView= (ListView) view.findViewById(R.id.listView_mygroup);
-        arraylist= new ArrayList<>();
-        //pre = (Button) view.findViewById(R.id.pre);
-        //next = (Button) view.findViewById(R.id.next);
-        //currentPage = (Button) view.findViewById(R.id.currentPage);
+        arraylist= new ArrayList<Postlist>();
 
         myGroup= (RelativeLayout) view.findViewById(R.id.myGroup);
         nomyGroup= (LinearLayout) view.findViewById(R.id.nomyGroup);
 
-        //scrollView= (ScrollView) view.findViewById(R.id.scrollView_mygroup);
 
         headView=LayoutInflater.from(mContext).inflate(R.layout.fragment_mygroup_frame_content,null);
-        mlistView.addHeaderView(headView);
+        //mlistView.addHeaderView(headView);
 
         headViewCreate=LayoutInflater.from(mContext).inflate(R.layout.fragment_mygroup_frame_content_create,null);
-        mlistView.addHeaderView(headViewCreate);
+        //mlistView.addHeaderView(headViewCreate);
 
-        more= (ImageButton) view.findViewById(R.id.more);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
+        linearLayoutManager
+                = new LinearLayoutManager(mContext);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        //设置布局管理器
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        arrow_update= (ImageButton) view.findViewById(R.id.arrow_update);
-        arrow_update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.setTabVisibilty();
-            }
-        });
-
-        mRefreshLayout= (MySwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mRefreshLayout= (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         mRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         //mRefreshLayout.setEnabled(false);
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+                getRes();
+            }
+        });
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 longTimeOperation();
             }
         });
-        mRefreshLayout.setOnLoadListener(new MySwipeRefreshLayout.OnLoadListener() {
-            @Override
-            public void onLoad() {
-                loadMore();
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private int lastVisibleItem;
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem + 1 == adapter
+                        .getItemCount()) {
+                    adapter.setMoreStatus(adapter.LOADING_MORE);
+                    loadMore();
+                }
             }
         });
 
-        //pre.setOnClickListener(this);
-        //next.setOnClickListener(this);
-        more.setOnClickListener(this);
+
+       /* more.setOnClickListener(this);
         mlistView.setOnItemClickListener(this);
         mlistView.setFocusable(false);
         mlistView.setFocusableInTouchMode(false);
-        mlistView.requestFocus();
+        mlistView.requestFocus();*/
 
         relay= (RelativeLayout) view.findViewById(R.id.myGroup_createpost);
     }
@@ -230,17 +240,15 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
 
 
     private void loadMore() {
+        mRefreshLayout.setRefreshing(true);
         if (index<pageCount) {
-            mRefreshLayout.setRefreshing(true);
-
             ++index;
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
-
-            mRefreshLayout.setRefreshing(false);
+            //adapter.notifyDataSetChanged();
         }else {
             Toast.makeText(mContext,"已经是最后一页",Toast.LENGTH_SHORT).show();
         }
+        mRefreshLayout.setRefreshing(false);
     }
 
     private void longTimeOperation() {
@@ -248,13 +256,13 @@ public class MygroupFragment extends Fragment implements View.OnClickListener,Ad
             mRefreshLayout.setRefreshing(true);
             --index;
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
+            //adapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         } else {
             mRefreshLayout.setRefreshing(true);
 
             getRes();
-            posts_listview_baseAdapter.notifyDataSetChanged();
+            //adapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }
     }

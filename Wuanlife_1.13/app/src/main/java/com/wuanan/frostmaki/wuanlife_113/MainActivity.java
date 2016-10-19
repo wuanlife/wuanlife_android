@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -35,6 +38,7 @@ import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.HomeCreatePostFragment;
 import com.wuanan.frostmaki.wuanlife_113.Home.Fragment_home;
 import com.wuanan.frostmaki.wuanlife_113.LoginRegisterCancel.BaseActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MygroupFragment;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Constant;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.MyApplication;
 
@@ -68,10 +72,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView l_mail;
     private TextView l_date;
 
+    private int tabIsselected=1;
     private static TabLayout tab;
+    private FloatingActionButton fab;
 
     /**
-     * 下划线图片宽度
+     *
      */
     private Handler handler=new Handler(){
         @Override
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //requestWindowFeature(Window.FEATURE_SUPPORT_ACTION_BAR);
         setContentView(R.layout.activity_main);
 
-
+        initConstant();
         initToolbar();
         initView();
 
@@ -116,6 +122,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void initConstant() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        Constant.displayWidth = displayMetrics.widthPixels;
+
+        Constant.displayHeight = displayMetrics.heightPixels;
+    }
 
 
     private void initDrawerLayout() {
@@ -124,38 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                View mContent = drawerLayout.getChildAt(0);
-                View mMenu = drawerView;
-                float scale = 1 - slideOffset;
-                float rightScale = 0.8f + scale * 0.2f;
 
-                if (drawerView.getTag().equals("LEFT"))
-                {
-
-                    float leftScale = 1 - 0.3f * scale;
-
-                    ViewHelper.setScaleX(mMenu, leftScale);
-                    ViewHelper.setScaleY(mMenu, leftScale);
-                    ViewHelper.setAlpha(mMenu, 0.6f + 0.4f * (1 - scale));
-                    ViewHelper.setTranslationX(mContent,
-                            mMenu.getMeasuredWidth() * (1 - scale));
-                    ViewHelper.setPivotX(mContent, 0);
-                    ViewHelper.setPivotY(mContent,
-                            mContent.getMeasuredHeight() / 2);
-                    mContent.invalidate();
-                    ViewHelper.setScaleX(mContent, rightScale);
-                    ViewHelper.setScaleY(mContent, rightScale);
-                } else
-                {
-                    ViewHelper.setTranslationX(mContent,
-                            -mMenu.getMeasuredWidth() * slideOffset);
-                    ViewHelper.setPivotX(mContent, mContent.getMeasuredWidth());
-                    ViewHelper.setPivotY(mContent,
-                            mContent.getMeasuredHeight() / 2);
-                    mContent.invalidate();
-                    ViewHelper.setScaleX(mContent, rightScale);
-                    ViewHelper.setScaleY(mContent, rightScale);
-                }
 
             }
 
@@ -182,12 +166,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         final TextView textView = (TextView) findViewById(R.id.toolbar_title);
-        textView.setText("午安网");
+        textView.setText(R.string.wuan);
         toolbar.setTitle("");
 
         setSupportActionBar(toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         toolbar.setNavigationOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -216,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 MygroupFragment.createPost();
                             }
                         }else {
-                            Toast.makeText(MainActivity.this,"请登录",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this,R.string.requireLogin,Toast.LENGTH_SHORT).show();
                         }
 
                         break;
@@ -237,9 +221,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tab.addTab(tab.newTab().setText("Tab 1"));
         tab.addTab(tab.newTab().setText("Tab 2"));
         tab.addTab(tab.newTab().setText("Tab 3"));
-
-
-
 
         mViewPager = (ViewPager) findViewById(R.id.mViewpager);
         mFragments = new ArrayList<Fragment>();
@@ -278,9 +259,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
        // tab.setBackgroundColor(Color.GRAY);
 
 
-        tab.getTabAt(0).setText("我的星球");
-        tab.getTabAt(1).setText("首页");
-        tab.getTabAt(2).setText("全部星球");
+        tab.getTabAt(0).setText(R.string.mGroup);
+        tab.getTabAt(1).setText(R.string.home);
+        tab.getTabAt(2).setText(R.string.aGroup);
 
 
         for (int i=0;i<tab.getTabCount();i++){
@@ -299,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onPageSelected(int position) {
-
+                tabIsselected=position;
             }
 
             @Override
@@ -337,14 +318,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         l_sex.setOnClickListener(this);
 
+        fab= (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(this);
+
     }
 
-    public static void setTabVisibilty(){
-        tab.setVisibility(View.VISIBLE);
-    }
-    public static void setTabGone(){
-        tab.setVisibility(View.GONE);
-    }
+
 
     @Override
     public void onClick(View v) {
@@ -366,12 +345,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.l_sex :
                 if (isman==true) {
-                    l_sex.setText("女");
+                    l_sex.setText(R.string.woman);
                     isman=false;
                 }else{
-                    l_sex.setText("男");
+                    l_sex.setText(R.string.man);
                     isman=true;
                 }
+                break;
+            case R.id.fab :
+
                 break;
         }
 
@@ -410,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("zhuxiao", e + "");
+
                 }
 
             }
@@ -444,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initDrawerLayout();
 
-        tab.getTabAt(1).select();
+        tab.getTabAt(tabIsselected).select();
     }
 
 

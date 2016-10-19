@@ -11,33 +11,20 @@
         android:layout_height="match_parent"
         android:visibility="visible">
 
-        <com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout
+        <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp">
-            <ListView
-                android:id="@+id/listView_mygroup"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:dividerHeight="8dp"
-                ></ListView>
-    </com.wuanan.frostmaki.wuanlife_113.Utils.MySwipeRefreshLayout>
-        <ImageButton
-            android:id="@+id/arrow_update"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_arrow_upward"
-            android:background="@drawable/circlebutton"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="30dp"
-            android:layout_marginBottom="50dp"
-            />
+                android:layout_marginRight="10dp"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
     </RelativeLayout>
 
     <LinearLayout
@@ -73,9 +60,11 @@
     <RelativeLayout
         android:id="@+id/myGroup_createpost"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="320dp"
         android:visibility="gone"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:elevation="10dp"
+        android:paddingLeft="10dp">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/ViewPager"
@@ -91,7 +80,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
             indicator:circleInterval="10dp"
-            indicator:fillColor="#F96A0E"
+            indicator:fillColor="@color/toolbarblue"
             indicator:radius="5dp"
             indicator:strokeColor="#cecece" />
     </RelativeLayout>

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Wuanlife_1.13</string>
+    <string name="man">男</string>
+    <string name="woman">女</string>
+    <string name="requireLogin">请登录</string>
+    <string name="wuan">午安网</string>
+    <string name="home">首页</string>
+    <string name="mGroup">我的星球</string>
+    <string name="aGroup">全部星球</string>
 </resources>

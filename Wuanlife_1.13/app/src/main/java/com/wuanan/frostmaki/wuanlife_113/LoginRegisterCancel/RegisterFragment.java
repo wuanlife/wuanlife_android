@@ -99,6 +99,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                         map.put("userID",userId+"");
                         map.put("Email",email);
                         regisInfo.add(map);
+                        MyApplication.setisLogin(true);
                         MyApplication.setUserInfo(regisInfo);
 
                         msg="注册成功";

@@ -5,7 +5,7 @@
     android:paddingTop="25dp">
     <TextView
         android:id="@+id/replyCount"
-        android:layout_width="60dp"
+        android:layout_width="wrap_content"
         android:layout_height="30dp"
 
         android:gravity="center"

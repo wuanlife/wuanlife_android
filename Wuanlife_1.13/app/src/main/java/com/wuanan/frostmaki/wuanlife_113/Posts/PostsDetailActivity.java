@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -31,6 +32,7 @@ import com.wuanan.frostmaki.wuanlife_113.CreateEditPost.CreatEditPostActivity;
 import com.wuanan.frostmaki.wuanlife_113.MyGroup.MyGroupJson;
 import com.wuanan.frostmaki.wuanlife_113.NewView.PostDetailsClass;
 import com.wuanan.frostmaki.wuanlife_113.R;
+import com.wuanan.frostmaki.wuanlife_113.Utils.Constant;
 import com.wuanan.frostmaki.wuanlife_113.Utils.GetImageSrc;
 import com.wuanan.frostmaki.wuanlife_113.Utils.Http_Url;
 import com.wuanan.frostmaki.wuanlife_113.Utils.ImageLoader;
@@ -69,7 +71,7 @@ public class PostsDetailActivity extends AppCompatActivity implements View.OnCli
     private LinearLayout postDetail_replylist_btn;
 
 
-
+    private int right=1;
     private boolean isSticky=false;  //未置顶， 点击要求置顶
     private boolean isLogin=false;
 
@@ -121,7 +123,15 @@ private Bitmap imageBitmap=null;
 
                     String source = postDetail_Base.getText();
                     handleText(source);
-
+                    if (right==postDetail_Base.getDeleteRight()){
+                        toolbar.getMenu().findItem(R.id.Item_delete).setVisible(true);
+                    }
+                    if (right==postDetail_Base.getEditRight()){
+                        toolbar.getMenu().findItem(R.id.Item_edit).setVisible(true);
+                    }
+                    if (right==postDetail_Base.getStickyRight()){
+                        toolbar.getMenu().findItem(R.id.Item_stick).setVisible(true);
+                    }
                     break;
                 case 3:
                     //kan回帖成功
@@ -130,6 +140,7 @@ private Bitmap imageBitmap=null;
                     adapter = new GetPostReplyAdapter(arrayList0202, mContext, replyCount, currentPage);
                     PostReplyListview.setAdapter(adapter);
                     setListViewHeightBasedOnChildren(PostReplyListview);
+
                     break;
                 case 4:
                     //回帖
@@ -180,7 +191,15 @@ private Bitmap imageBitmap=null;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.postsdetails_menu,menu);
+        menu.findItem(R.id.Item_delete).setVisible(false);
+        menu.findItem(R.id.Item_stick).setVisible(false);
+        menu.findItem(R.id.Item_edit).setVisible(false);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -573,6 +592,13 @@ private Bitmap imageBitmap=null;
             System.out.println(list.get(i));
             //getTextThread getTextThread=new getTextThread(list.get(i));
             ImageView imageView = new ImageView(mContext);
+            int width = (int) (Constant.displayWidth * 0.003f);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    (int) (Constant.displayWidth * 0.8f + 0.5f),
+                    (int) (Constant.displayHeight * 0.3f + 0.5f));
+            params.setMargins(width, width, width, width);
+            imageView.setLayoutParams(params);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             String urlTag = list.get(i);
             imageView.setTag(urlTag);
             new ImageLoader().showImageByThread(imageView, urlTag);
@@ -585,81 +611,7 @@ private Bitmap imageBitmap=null;
             }
         }
     }
-    /*private void handleText(String s) {
-        String source=s;
-        String pattern = "<img\\ssrc=([^>]*)>";
-        //String pattern = "<img[\\s]+src[\\s]*=[\\s]*((['\"][\\'\"])|(?<src>[^\\s]*))";
-        Pattern p = Pattern.compile(pattern);
-        if (source!=null){
-            Matcher m = p.matcher(source);
-            Boolean real = source.matches(pattern);
 
-
-
-            int start = 0;
-            int end = 0;
-            getTextThread t2 = null;
-            while (m.find()) {
-
-                start = m.start();
-                if ((start - end) == 0) {
-
-                    end = m.end();
-                    t2 = new getTextThread(m.group(1));
-                    t2.start();
-
-                } else {
-
-                    String sub = null;
-                    sub = source.substring(end, start);
-
-                    if (t2 != null) {
-                        try {
-
-                            t2.join();
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-
-                    }
-
-                    Message message = Message.obtain();
-                    message.what = 6;
-                    message.obj = sub;
-                    handler.sendMessage(message);
-
-                    end = m.end();
-
-                    t2 = new getTextThread(m.group(1));
-                    t2.start();
-                }
-            }
-
-            if ((source.length()) > end) {
-
-                if (t2 != null) {
-                    try {
-
-                        t2.join();
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    //System.out.println(t2.isAlive());
-                }
-
-                String little = source.substring(end, source.length());
-                Message message = Message.obtain();
-                message.what = 6;
-                message.obj = little;
-                handler.sendMessage(message);
-
-            }
-        }
-    }*/
 
     class getTextThread extends Thread {
         String str = null;
