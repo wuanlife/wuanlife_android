@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.jakewharton.butterknife'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.wuanla.www.wuanlife_120"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    sourceSets{
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            res.srcDirs =
+                    ['src/main/res',
+                     'src/main/home',
+                     'src/main/find',
+                            'src/main/login',
+                            'src/main/message',
+                            'src/main/my'
+                    ]
+        }
+
+    }
+
+
+
+
+
+
+
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0'
+    compile 'com.android.support:design:25.3.0'
+
+
+    //黄油小刀
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    //网络框架
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+
+    //异步框架
+    compile 'io.reactivex:rxjava:1.2.5'
+    compile 'io.reactivex:rxandroid:1.2.1'
+
+    //gson解析框架
+    compile 'com.google.code.gson:gson:2.8.0'
+
+    //ORM数据库
+    compile 'org.greenrobot:greendao:3.2.0'
+    compile 'org.greenrobot:greendao-generator:3.2.0'
+
+
+    testCompile 'junit:junit:4.12'
+}
