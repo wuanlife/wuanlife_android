@@ -79,5 +79,9 @@ dependencies {
     compile 'org.greenrobot:greendao-generator:3.2.0'
 
 
+    compile 'me.yokeyword:fragmentation:0.10.1'
+
+
+
     testCompile 'junit:junit:4.12'
 }
