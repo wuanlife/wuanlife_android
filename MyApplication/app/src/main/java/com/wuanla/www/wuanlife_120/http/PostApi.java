@@ -14,6 +14,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -28,8 +29,11 @@ public interface PostApi {
      * @param user_id 整型	可选	-	最小：1
      * @param pn      整型	可选	1	第几页
      */
-    @GET("get_index_post")
-    Observable<PostGetIndex> get_index_post(@Query("user_id") int user_id, @Query("pn") int pn);
+    @GET("{path}/get_index_post")
+    Observable<PostGetIndex> get_index_post(
+            @Path("path") String type,
+            @Query("user_id") String user_id,
+            @Query("pn") String pn);
 
     /**
      * 我的星球页面帖子显示

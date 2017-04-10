@@ -1,4 +1,6 @@
-<resources>
+<?xml version="1.0" encoding="utf-8" ?>
+
+<resources   xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -7,6 +9,23 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+
+
+
+    <style name="AppTheme.MyLight" parent="AppTheme">
+        <item name="frameLayoutBackGround">@color/gray300</item>
+    </style>
+        
+    
+    
+    <style name="HomeSecondText">
+        <item name="android:textColor">@color/gray400</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    
+
+
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>

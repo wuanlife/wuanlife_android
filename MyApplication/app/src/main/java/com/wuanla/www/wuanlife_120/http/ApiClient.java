@@ -14,25 +14,53 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
 
+    private static volatile Retrofit sRetrofit;
+    private static  GroupApi sGroupApi;
+    private static  PostApi sPostApi;
+    private static  UserApi sUserApi;
 
-    private ApiClient(){}
 
+    public static Retrofit getInstance() {
+        if (sRetrofit == null) {
+            synchronized (ApiClient.class) {
+                if (sRetrofit == null) {
+                    sRetrofit = new Retrofit.Builder()
+                            .baseUrl(ApiDefine.BASE_URL)
+                            .client(new OkHttpClient.Builder()
+                                    .addInterceptor(createHttpLoggingInterceptor())
+                                    .build())
+                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+                }
+            }
 
-            public static  ApiService service;
-
-        public static ApiService getInstance(){
-            if(service==null){
-                service =new Retrofit.Builder()
-                        .baseUrl(ApiDefine.BASE_URL)
-                        .client(new OkHttpClient.Builder()
-                                .addInterceptor(createHttpLoggingInterceptor())
-                                .build())
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                    .create(ApiService.class);
         }
-        return  service;
+        return sRetrofit;
+    }
+
+
+    public static GroupApi getGroupApiService() {
+        if (sGroupApi == null) {
+                    sGroupApi = getInstance().create(GroupApi.class);
+        }
+        return sGroupApi;
+    }
+
+
+    public static PostApi getPostApiService() {
+        if (sPostApi == null) {
+                    sPostApi = getInstance().create(PostApi.class);
+        }
+        return sPostApi;
+    }
+
+
+    public static UserApi getUserApiService() {
+        if (sUserApi == null) {
+                    sUserApi = getInstance().create(UserApi.class);
+        }
+        return sUserApi;
     }
 
 

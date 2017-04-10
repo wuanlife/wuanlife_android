@@ -1,10 +1,10 @@
-package com.wuanla.www.wuanlife_120.home.contract;
+package com.wuanla.www.wuanlife_120.contract.main;
 
 import com.wuanla.www.wuanlife_120.base.BasePresenter;
 import com.wuanla.www.wuanlife_120.base.BaseView;
 
 /**
- * Created by lezi on 2017/3/22.
+ * Created by ZhangLe on 2017/4/10/010.
  */
 
 public interface HomeContract {
@@ -14,8 +14,12 @@ public interface HomeContract {
 
     }
 
-    interface HomePresenter extends BasePresenter{
 
+
+    interface HomePresenter extends BasePresenter {
+
+
+        void getHomeDataAsyncTask();
     }
 
 

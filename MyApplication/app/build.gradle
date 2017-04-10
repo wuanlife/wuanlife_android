@@ -82,6 +82,10 @@ dependencies {
     compile 'me.yokeyword:fragmentation:0.10.1'
 
 
+    compile ('com.alibaba.android:vlayout:1.0.4@aar') {
+        transitive = true
+    }
+
 
     testCompile 'junit:junit:4.12'
 }

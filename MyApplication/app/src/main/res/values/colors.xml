@@ -6,6 +6,9 @@
 
 
 
+    <color name="tab_un_select">#ffffff</color>
+    <color name="tab_select">#D0D9FF</color>
+
     <color name="tab_unselect">#c9c9c9</color>
 
     <!-- red-->

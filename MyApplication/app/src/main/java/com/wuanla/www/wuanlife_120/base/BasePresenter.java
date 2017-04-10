@@ -7,4 +7,6 @@ package com.wuanla.www.wuanlife_120.base;
 public interface BasePresenter {
 
 
+
+
 }
